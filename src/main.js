@@ -122,7 +122,7 @@ function showHint() {
   const s = State.getSession();
   const qObj = s.lessonQuestions[s.currentQuestionIndex];
   if (!qObj) return;
-  generateAndShowHint(String(qObj.a));
+  generateAndShowHint(qObj);
 }
 
 function showAssignHint() {
@@ -130,18 +130,29 @@ function showAssignHint() {
   const s = State.getSession();
   const qObj = s.assignmentQuestions[s.assignmentIndex];
   if (!qObj) return;
-  generateAndShowHint(String(qObj.a));
+  generateAndShowHint(qObj);
 }
 
-function generateAndShowHint(ans) {
-  if (ans.length > 1 && !isNaN(ans) && !ans.includes('/')) {
-    const firstDigit = ans[0];
-    showToast(`Hint: It's a ${ans.length}-digit number starting with ${firstDigit}.`, 'info', 4000);
-  } else if (!isNaN(ans) && !ans.includes('/')) {
+function generateAndShowHint(qObj) {
+  const ans = String(qObj.a);
+  
+  if (ans.includes('R')) {
+    showToast(`Hint: The answer has a remainder. Format like "4 R 2"`, 'info', 4000);
+  } else if (ans.includes('/')) {
+    showToast(`Hint: Find the equivalent fraction or simplify your fraction.`, 'info', 5000);
+  } else if (qObj.builderType === 'part-whole') {
+    showToast(`Hint: Add the parts together to find the whole.`, 'info', 4000);
+  } else if (qObj.builderType === 'comparison') {
+    showToast(`Hint: First find the difference, then add it to the base.`, 'info', 5000);
+  } else if (qObj.builderType === 'guess-check') {
+    showToast(`Hint: Adjust sliders until the total value reaches $${qObj.params.targetValue}. The count is near ${ans}.`, 'info', 6000);
+  } else if (!isNaN(ans) && ans.length > 1) {
+    showToast(`Hint: It's a ${ans.length}-digit number starting with ${ans[0]}.`, 'info', 4000);
+  } else if (!isNaN(ans) && ans.length === 1) {
     const val = parseInt(ans);
-    showToast(`Hint: The answer is between ${val - 2} and ${val + 3}.`, 'info', 4000);
+    showToast(`Hint: The answer is near ${val + 1}.`, 'info', 4000);
   } else {
-    showToast(`Hint: Re-read the question and use the blocks carefully.`, 'info', 4000);
+    showToast(`Hint: Re-read the question carefully and take your time.`, 'info', 4000);
   }
 }
 
