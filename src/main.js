@@ -1,6 +1,6 @@
 import { State, Audio, Confetti, BADGES, showToast } from './state.js';
 import { MODULES, getLesson, getModule } from './curriculum.js';
-import { Generator } from './engine.js';
+import { Generator, shuffle } from './engine.js';
 
 /* ============================================
    MathQuest — Main Application Controller

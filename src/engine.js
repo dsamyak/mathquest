@@ -19,7 +19,7 @@ function randInt(min, max) {
 }
 
 // Shuffle an array
-function shuffle(array) {
+export function shuffle(array) {
   const newArr = [...array];
   for (let i = newArr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
