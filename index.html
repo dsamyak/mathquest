@@ -1,30 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="MathQuest — An interactive gamified mathematics learning platform for primary school students. Master numbers, fractions, geometry through drag-and-drop block models." />
+  <meta name="description"
+    content="MathQuest — An interactive gamified mathematics learning platform for primary school students. Master numbers, fractions, geometry through drag-and-drop block models." />
   <title>MathQuest — Learn Math Through Play</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
+
 <body>
   <div id="app">
     <!-- ============ LOADING SCREEN ============ -->
-    <div id="loading-screen" class="view active">
-      <div class="loading-content">
-        <div class="loading-logo">
-          <span class="logo-icon">🧮</span>
-          <h1 class="logo-text">Math<span class="accent">Quest</span></h1>
-        </div>
-        <div class="loading-bar-track">
-          <div class="loading-bar-fill" id="loading-bar"></div>
-        </div>
 
-      </div>
-    </div>
 
     <!-- ============ DASHBOARD ============ -->
     <div id="view-dashboard" class="view">
@@ -51,7 +45,8 @@
           <div class="welcome-card glass-card">
             <div class="welcome-text">
               <h1 id="welcome-greeting">Welcome back, Explorer! 👋</h1>
-              <p class="welcome-sub" id="welcome-sub">Continue your math adventure. You've completed <strong id="welcome-progress">0</strong> lessons so far!</p>
+              <p class="welcome-sub" id="welcome-sub">Continue your math adventure. You've completed <strong
+                  id="welcome-progress">0</strong> lessons so far!</p>
             </div>
             <div class="quick-actions">
               <button class="btn btn-primary btn-glow" id="btn-continue-learning">
@@ -150,7 +145,8 @@
         <div class="problem-card glass-card" id="problem-card">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 5px;">
             <div class="problem-type-badge" id="problem-type-badge">Part-Whole</div>
-            <button class="btn btn-secondary" id="btn-hint" style="padding: 4px 8px; font-size: 0.8rem; height: max-content;">💡 Hint</button>
+            <button class="btn btn-secondary" id="btn-hint"
+              style="padding: 4px 8px; font-size: 0.8rem; height: max-content;">💡 Hint</button>
           </div>
           <p class="problem-text" id="problem-text">Loading question...</p>
         </div>
@@ -231,12 +227,14 @@
                 <div class="gc-result-row">
                   <span>Total count:</span>
                   <span id="gc-total-count" class="gc-result-val">46</span>
-                  <span class="gc-target-indicator" id="gc-count-indicator">🎯 Target: <strong id="gc-count-target">46</strong></span>
+                  <span class="gc-target-indicator" id="gc-count-indicator">🎯 Target: <strong
+                      id="gc-count-target">46</strong></span>
                 </div>
                 <div class="gc-result-row gc-total-row">
                   <span>Total value:</span>
                   <span id="gc-total-value" class="gc-result-val gc-value-display">$0</span>
-                  <span class="gc-target-indicator" id="gc-value-indicator">🎯 Target: <strong id="gc-value-target">$149</strong></span>
+                  <span class="gc-target-indicator" id="gc-value-indicator">🎯 Target: <strong
+                      id="gc-value-target">$149</strong></span>
                 </div>
                 <div class="gc-progress-bar">
                   <div class="gc-progress-fill" id="gc-progress-fill"></div>
@@ -302,7 +300,8 @@
         <div class="assign-problem-card glass-card" id="assign-problem-card">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 5px;">
             <div class="assign-difficulty-badge" id="assign-difficulty">Easy</div>
-            <button class="btn btn-secondary" id="assign-btn-hint" style="padding: 4px 8px; font-size: 0.8rem; height: max-content;">💡 Hint</button>
+            <button class="btn btn-secondary" id="assign-btn-hint"
+              style="padding: 4px 8px; font-size: 0.8rem; height: max-content;">💡 Hint</button>
           </div>
           <p class="assign-problem-text" id="assign-problem-text">Loading...</p>
         </div>
@@ -310,10 +309,14 @@
           <!-- Choices or input rendered by JS -->
         </div>
         <div class="assign-stats-row">
-          <div class="assign-stat"><span class="assign-stat-label">Correct:</span><span id="assign-correct" class="assign-stat-val correct-val">0</span></div>
-          <div class="assign-stat"><span class="assign-stat-label">Wrong:</span><span id="assign-wrong" class="assign-stat-val wrong-val">0</span></div>
-          <div class="assign-stat"><span class="assign-stat-label">Accuracy:</span><span id="assign-accuracy" class="assign-stat-val">0%</span></div>
-          <div class="assign-stat"><span class="assign-stat-label">Streak:</span><span id="assign-streak" class="assign-stat-val">🔥 0</span></div>
+          <div class="assign-stat"><span class="assign-stat-label">Correct:</span><span id="assign-correct"
+              class="assign-stat-val correct-val">0</span></div>
+          <div class="assign-stat"><span class="assign-stat-label">Wrong:</span><span id="assign-wrong"
+              class="assign-stat-val wrong-val">0</span></div>
+          <div class="assign-stat"><span class="assign-stat-label">Accuracy:</span><span id="assign-accuracy"
+              class="assign-stat-val">0%</span></div>
+          <div class="assign-stat"><span class="assign-stat-label">Streak:</span><span id="assign-streak"
+              class="assign-stat-val">🔥 0</span></div>
         </div>
       </main>
     </div>
@@ -369,4 +372,5 @@
 
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>
