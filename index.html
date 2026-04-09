@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MathQuest — An interactive gamified mathematics learning platform for primary school students. Master numbers, fractions, geometry through drag-and-drop block models." />
+  <title>MathQuest — Learn Math Through Play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ============ LOADING SCREEN ============ -->
+    <div id="loading-screen" class="view active">
+      <div class="loading-content">
+        <div class="loading-logo">
+          <span class="logo-icon">🧮</span>
+          <h1 class="logo-text">Math<span class="accent">Quest</span></h1>
+        </div>
+        <div class="loading-bar-track">
+          <div class="loading-bar-fill" id="loading-bar"></div>
+        </div>
+        <p class="loading-tip" id="loading-tip">Preparing your adventure...</p>
+      </div>
+    </div>
+
+    <!-- ============ DASHBOARD ============ -->
+    <div id="view-dashboard" class="view">
+      <header class="app-header">
+        <div class="header-left">
+          <span class="logo-icon-sm">🧮</span>
+          <span class="logo-text-sm">Math<span class="accent">Quest</span></span>
+        </div>
+        <div class="header-center">
+          <div class="xp-bar-container" id="header-xp-bar">
+            <div class="xp-bar-fill" id="header-xp-fill"></div>
+            <span class="xp-label" id="header-xp-label">Lvl 1 • 0 / 100 XP</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="icon-btn" id="btn-achievements" title="Achievements">🏆</button>
+          <button class="icon-btn" id="btn-settings" title="Settings">⚙️</button>
+          <div class="streak-badge" id="streak-badge">🔥 <span id="streak-count">0</span></div>
+        </div>
+      </header>
+
+      <main class="dashboard-main">
+        <section class="welcome-section">
+          <div class="welcome-card glass-card">
+            <div class="welcome-text">
+              <h1 id="welcome-greeting">Welcome back, Explorer! 👋</h1>
+              <p class="welcome-sub" id="welcome-sub">Continue your math adventure. You've completed <strong id="welcome-progress">0</strong> lessons so far!</p>
+            </div>
+            <div class="quick-actions">
+              <button class="btn btn-primary btn-glow" id="btn-continue-learning">
+                <span class="btn-icon">▶️</span> Continue Learning
+              </button>
+              <button class="btn btn-secondary" id="btn-start-assignment">
+                <span class="btn-icon">📝</span> 100-Question Challenge
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="modules-section">
+          <h2 class="section-title">Learning Modules</h2>
+          <div class="modules-grid" id="modules-grid">
+            <!-- Module cards rendered by JS -->
+          </div>
+        </section>
+
+        <section class="stats-section">
+          <h2 class="section-title">Your Progress</h2>
+          <div class="stats-grid">
+            <div class="stat-card glass-card">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-value" id="stat-total-xp">0</div>
+              <div class="stat-label">Total XP</div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-value" id="stat-questions">0</div>
+              <div class="stat-label">Questions Solved</div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon">🎯</div>
+              <div class="stat-value" id="stat-accuracy">0%</div>
+              <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-value" id="stat-best-streak">0</div>
+              <div class="stat-label">Best Streak</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ============ MODULE VIEW ============ -->
+    <div id="view-module" class="view">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="icon-btn" id="btn-back-dashboard" title="Back">← Back</button>
+        </div>
+        <div class="header-center">
+          <h2 class="header-title" id="module-title">Module 1</h2>
+        </div>
+        <div class="header-right">
+          <div class="module-progress-badge" id="module-progress-badge">0/14</div>
+        </div>
+      </header>
+      <main class="module-main">
+        <div class="module-hero glass-card" id="module-hero">
+          <div class="module-hero-icon" id="module-hero-icon">📐</div>
+          <div class="module-hero-info">
+            <h1 id="module-hero-title">Foundations</h1>
+            <p id="module-hero-desc">Master the building blocks of mathematics</p>
+          </div>
+        </div>
+        <div class="lessons-grid" id="lessons-grid">
+          <!-- Lesson cards rendered by JS -->
+        </div>
+      </main>
+    </div>
+
+    <!-- ============ LESSON VIEW ============ -->
+    <div id="view-lesson" class="view">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="icon-btn" id="btn-back-module" title="Back">← Back</button>
+        </div>
+        <div class="header-center">
+          <h2 class="header-title" id="lesson-title">Lesson</h2>
+        </div>
+        <div class="header-right">
+          <div class="lesson-progress" id="lesson-progress">
+            <span id="lesson-q-current">1</span> / <span id="lesson-q-total">10</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="lesson-main">
+        <!-- Question Problem Statement -->
+        <div class="problem-card glass-card" id="problem-card">
+          <div class="problem-type-badge" id="problem-type-badge">Part-Whole</div>
+          <p class="problem-text" id="problem-text">Loading question...</p>
+        </div>
+
+        <!-- Interactive Builder Area -->
+        <div class="builder-area" id="builder-area">
+          <!-- Part-Whole Builder -->
+          <div class="builder-canvas" id="builder-part-whole" style="display:none;">
+            <div class="builder-label">Build the model by dragging blocks:</div>
+            <div class="pw-track-container">
+              <div class="pw-track" id="pw-track">
+                <div class="pw-drop-zone" id="pw-drop-1" data-slot="0"></div>
+                <div class="pw-drop-zone" id="pw-drop-2" data-slot="1"></div>
+                <div class="pw-drop-zone" id="pw-drop-3" data-slot="2"></div>
+              </div>
+              <div class="pw-bracket" id="pw-bracket">
+                <span class="pw-bracket-label" id="pw-total-label">? Total</span>
+              </div>
+            </div>
+            <div class="pw-dock" id="pw-dock">
+              <!-- Draggable blocks rendered by JS -->
+            </div>
+            <div class="builder-answer-row">
+              <label class="builder-input-label">What is the total?</label>
+              <input type="number" class="builder-input" id="pw-answer-input" placeholder="Enter total..." />
+              <button class="btn btn-primary" id="pw-submit-btn">Check ✓</button>
+            </div>
+          </div>
+
+          <!-- Comparison Builder -->
+          <div class="builder-canvas" id="builder-comparison" style="display:none;">
+            <div class="builder-label">Compare by building side-by-side blocks:</div>
+            <div class="comp-tracks">
+              <div class="comp-row">
+                <span class="comp-entity-name" id="comp-name-1">Person A</span>
+                <div class="comp-track" id="comp-track-1">
+                  <div class="comp-drop-zone" id="comp-drop-1a" data-entity="0" data-slot="0"></div>
+                </div>
+              </div>
+              <div class="comp-row">
+                <span class="comp-entity-name" id="comp-name-2">Person B</span>
+                <div class="comp-track" id="comp-track-2">
+                  <div class="comp-drop-zone" id="comp-drop-2a" data-entity="1" data-slot="0"></div>
+                  <div class="comp-drop-zone comp-extra" id="comp-drop-2b" data-entity="1" data-slot="1"></div>
+                </div>
+              </div>
+              <div class="comp-bracket-area">
+                <div class="comp-bracket" id="comp-bracket">
+                  <span class="comp-bracket-label" id="comp-total-label">? Total</span>
+                </div>
+              </div>
+            </div>
+            <div class="comp-dock" id="comp-dock"></div>
+            <div class="builder-answer-row">
+              <label class="builder-input-label" id="comp-question-label">What is the answer?</label>
+              <input type="number" class="builder-input" id="comp-answer-input" placeholder="Enter answer..." />
+              <button class="btn btn-primary" id="comp-submit-btn">Check ✓</button>
+            </div>
+          </div>
+
+          <!-- Guess & Check Builder -->
+          <div class="builder-canvas" id="builder-guess-check" style="display:none;">
+            <div class="builder-label">Adjust the sliders to find the right combination:</div>
+            <div class="gc-table-container">
+              <div class="gc-visual">
+                <div class="gc-slider-group">
+                  <label class="gc-label" id="gc-label-a">$5 notes</label>
+                  <input type="range" class="gc-slider" id="gc-slider-a" min="0" max="46" value="23" />
+                  <span class="gc-slider-value" id="gc-val-a">23</span>
+                </div>
+                <div class="gc-slider-group">
+                  <label class="gc-label" id="gc-label-b">$2 notes</label>
+                  <input type="range" class="gc-slider" id="gc-slider-b" min="0" max="46" value="23" />
+                  <span class="gc-slider-value" id="gc-val-b">23</span>
+                </div>
+              </div>
+              <div class="gc-results">
+                <div class="gc-result-row">
+                  <span>Total count:</span>
+                  <span id="gc-total-count" class="gc-result-val">46</span>
+                  <span class="gc-target-indicator" id="gc-count-indicator">🎯 Target: <strong id="gc-count-target">46</strong></span>
+                </div>
+                <div class="gc-result-row gc-total-row">
+                  <span>Total value:</span>
+                  <span id="gc-total-value" class="gc-result-val gc-value-display">$0</span>
+                  <span class="gc-target-indicator" id="gc-value-indicator">🎯 Target: <strong id="gc-value-target">$149</strong></span>
+                </div>
+                <div class="gc-progress-bar">
+                  <div class="gc-progress-fill" id="gc-progress-fill"></div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary" id="gc-submit-btn" disabled>Lock In Answer ✓</button>
+          </div>
+
+          <!-- Standard Quiz (Multiple Choice / Input) -->
+          <div class="builder-canvas" id="builder-quiz" style="display:none;">
+            <div class="quiz-visual" id="quiz-visual">
+              <!-- Dynamic visual aids rendered by JS (number lines, arrays, clocks, etc.) -->
+            </div>
+            <div class="quiz-choices" id="quiz-choices">
+              <!-- Answer buttons rendered by JS -->
+            </div>
+            <div class="quiz-input-row" id="quiz-input-row" style="display:none;">
+              <input type="text" class="builder-input" id="quiz-answer-input" placeholder="Type your answer..." />
+              <button class="btn btn-primary" id="quiz-submit-btn">Check ✓</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback Overlay -->
+        <div class="feedback-overlay" id="feedback-overlay" style="display:none;">
+          <div class="feedback-content" id="feedback-content">
+            <div class="feedback-icon" id="feedback-icon">✅</div>
+            <div class="feedback-text" id="feedback-text">Correct!</div>
+            <div class="feedback-detail" id="feedback-detail"></div>
+            <div class="feedback-xp" id="feedback-xp">+10 XP</div>
+            <button class="btn btn-primary" id="btn-next-question">Next Question →</button>
+          </div>
+        </div>
+
+        <!-- Lesson Progress Bar -->
+        <div class="lesson-progress-bar">
+          <div class="lesson-progress-fill" id="lesson-progress-fill"></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ============ ASSIGNMENT VIEW ============ -->
+    <div id="view-assignment" class="view">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="icon-btn" id="btn-quit-assignment" title="Quit">✕ Quit</button>
+        </div>
+        <div class="header-center">
+          <h2 class="header-title">📝 100-Question Challenge</h2>
+        </div>
+        <div class="header-right">
+          <div class="assignment-counter">
+            <span id="assign-current">1</span> / <span id="assign-total">100</span>
+          </div>
+        </div>
+      </header>
+      <main class="assignment-main">
+        <div class="assign-progress-track">
+          <div class="assign-progress-fill" id="assign-progress-fill"></div>
+          <div class="assign-progress-markers" id="assign-progress-markers"></div>
+        </div>
+        <div class="assign-problem-card glass-card" id="assign-problem-card">
+          <div class="assign-difficulty-badge" id="assign-difficulty">Easy</div>
+          <p class="assign-problem-text" id="assign-problem-text">Loading...</p>
+        </div>
+        <div class="assign-answer-area" id="assign-answer-area">
+          <!-- Choices or input rendered by JS -->
+        </div>
+        <div class="assign-stats-row">
+          <div class="assign-stat"><span class="assign-stat-label">Correct:</span><span id="assign-correct" class="assign-stat-val correct-val">0</span></div>
+          <div class="assign-stat"><span class="assign-stat-label">Wrong:</span><span id="assign-wrong" class="assign-stat-val wrong-val">0</span></div>
+          <div class="assign-stat"><span class="assign-stat-label">Accuracy:</span><span id="assign-accuracy" class="assign-stat-val">0%</span></div>
+          <div class="assign-stat"><span class="assign-stat-label">Streak:</span><span id="assign-streak" class="assign-stat-val">🔥 0</span></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ============ ACHIEVEMENTS VIEW ============ -->
+    <div id="view-achievements" class="view">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="icon-btn" id="btn-back-from-achievements" title="Back">← Back</button>
+        </div>
+        <div class="header-center">
+          <h2 class="header-title">🏆 Achievements</h2>
+        </div>
+        <div class="header-right"></div>
+      </header>
+      <main class="achievements-main">
+        <section class="skill-tree-section">
+          <h2 class="section-title">Skill Tree</h2>
+          <div class="skill-tree" id="skill-tree">
+            <!-- Nodes rendered by JS -->
+          </div>
+        </section>
+        <section class="badges-section">
+          <h2 class="section-title">Badges Earned</h2>
+          <div class="badges-grid" id="badges-grid">
+            <!-- Badges rendered by JS -->
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ============ RESULTS MODAL ============ -->
+    <div class="modal-overlay" id="modal-overlay" style="display:none;">
+      <div class="modal-card glass-card" id="modal-card">
+        <div class="modal-icon" id="modal-icon">🎉</div>
+        <h2 class="modal-title" id="modal-title">Congratulations!</h2>
+        <p class="modal-text" id="modal-text">You've completed the challenge!</p>
+        <div class="modal-stats" id="modal-stats"></div>
+        <div class="modal-badges" id="modal-badges"></div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" id="modal-primary-btn">Continue</button>
+          <button class="btn btn-secondary" id="modal-secondary-btn" style="display:none;">Review</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CONFETTI CANVAS ============ -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
