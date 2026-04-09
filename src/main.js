@@ -16,7 +16,6 @@ const DOM = {
   lesson: document.getElementById('view-lesson'),
   assignment: document.getElementById('view-assignment'),
   achievements: document.getElementById('view-achievements'),
-  loading: document.getElementById('loading-screen'),
   
   // Dashboard
   welcomeProg: document.getElementById('welcome-progress'),
@@ -77,7 +76,6 @@ function init() {
   bindEvents();
   
   // Skip loading animation directly to dashboard
-  DOM.loading.classList.remove('active');
   navigate('dashboard');
 }
 
