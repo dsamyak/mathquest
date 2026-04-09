@@ -98,6 +98,7 @@ function bindEvents() {
   document.getElementById('btn-random-lesson').onclick = () => { Audio.click(); startRandomLesson(); };
   document.getElementById('btn-hint').onclick = () => { showHint(); };
   document.getElementById('assign-btn-hint').onclick = () => { showAssignHint(); };
+  document.getElementById('btn-download-cert').onclick = () => { Audio.click(); generateCertificate(); };
 
   // Modals
   document.getElementById('modal-primary-btn').onclick = () => {
@@ -821,6 +822,86 @@ function showLevelUpModal() {
     'You leveled up! Keep learning to earn more badges.',
     ''
   );
+}
+
+function generateCertificate() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 848;
+  const ctx = canvas.getContext('2d');
+  
+  const s = State.get();
+  
+  // Draw Background
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, '#111638');
+  gradient.addColorStop(1, '#0a0e27');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw Border/Accents
+  ctx.strokeStyle = '#7c3aed';
+  ctx.lineWidth = 14;
+  ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+  
+  ctx.strokeStyle = '#06b6d4';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(55, 55, canvas.width - 110, canvas.height - 110);
+  
+  // Draw Header
+  ctx.fillStyle = '#06b6d4';
+  ctx.font = 'bold 50px Outfit, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('IntelliaSG', canvas.width / 2, 160);
+  
+  ctx.fillStyle = '#f1f5f9';
+  ctx.font = 'bold 80px Outfit, sans-serif';
+  ctx.fillText('Certificate of Achievement', canvas.width / 2, 280);
+  
+  // Draw Content
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '30px Inter, sans-serif';
+  ctx.fillText('This is proudly presented to', canvas.width / 2, 380);
+  
+  // Player Name
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = 'bold 70px Outfit, sans-serif';
+  ctx.fillText(s.playerName || 'Explorer', canvas.width / 2, 480);
+  
+  // Reason
+  ctx.fillStyle = '#f1f5f9';
+  ctx.font = '28px Inter, sans-serif';
+  ctx.fillText(`For outstanding performance in Mathematics.`, canvas.width / 2, 580);
+  ctx.fillText(`Achieved Level ${s.level} and conquered ${s.totalQuestionsAnswered} interactive challenges!`, canvas.width / 2, 630);
+  
+  // Date and Signature
+  ctx.font = '24px Inter, sans-serif';
+  ctx.fillStyle = '#94a3b8';
+  
+  const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  ctx.fillText('Date', 300, 720);
+  ctx.fillRect(200, 730, 200, 2);
+  ctx.fillStyle = '#f1f5f9';
+  ctx.fillText(today, 300, 765);
+  
+  ctx.fillStyle = '#94a3b8';
+  ctx.fillText('IntelliaSG Director', canvas.width - 300, 720);
+  ctx.fillRect(canvas.width - 400, 730, 200, 2);
+  ctx.fillStyle = '#f1f5f9';
+  ctx.font = 'italic 34px serif';
+  ctx.fillText('IntelliaSG', canvas.width - 300, 765);
+  
+  // Create download link
+  const dataURL = canvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = dataURL;
+  a.download = `IntelliaSG_Certificate_${s.playerName || 'Explorer'}.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  
+  showToast('Certificate successfully downloaded!', 'success');
+  Confetti.burst(150);
 }
 
 // Start
