@@ -60,6 +60,9 @@
               <button class="btn btn-secondary" id="btn-start-assignment">
                 <span class="btn-icon">📝</span> Assignments
               </button>
+              <button class="btn btn-secondary" id="btn-random-lesson">
+                <span class="btn-icon">🎲</span> Random Practice
+              </button>
             </div>
           </div>
         </section>
@@ -145,7 +148,10 @@
       <main class="lesson-main">
         <!-- Question Problem Statement -->
         <div class="problem-card glass-card" id="problem-card">
-          <div class="problem-type-badge" id="problem-type-badge">Part-Whole</div>
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 5px;">
+            <div class="problem-type-badge" id="problem-type-badge">Part-Whole</div>
+            <button class="btn btn-secondary" id="btn-hint" style="padding: 4px 8px; font-size: 0.8rem; height: max-content;">💡 Hint</button>
+          </div>
           <p class="problem-text" id="problem-text">Loading question...</p>
         </div>
 
@@ -294,7 +300,10 @@
           <div class="assign-progress-markers" id="assign-progress-markers"></div>
         </div>
         <div class="assign-problem-card glass-card" id="assign-problem-card">
-          <div class="assign-difficulty-badge" id="assign-difficulty">Easy</div>
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 5px;">
+            <div class="assign-difficulty-badge" id="assign-difficulty">Easy</div>
+            <button class="btn btn-secondary" id="assign-btn-hint" style="padding: 4px 8px; font-size: 0.8rem; height: max-content;">💡 Hint</button>
+          </div>
           <p class="assign-problem-text" id="assign-problem-text">Loading...</p>
         </div>
         <div class="assign-answer-area" id="assign-answer-area">

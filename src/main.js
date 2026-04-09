@@ -76,11 +76,9 @@ function init() {
   
   bindEvents();
   
-  // Sim loading
-  setTimeout(() => {
-    DOM.loading.classList.remove('active');
-    navigate('dashboard');
-  }, 1000);
+  // Skip loading animation directly to dashboard
+  DOM.loading.classList.remove('active');
+  navigate('dashboard');
 }
 
 function bindEvents() {
@@ -99,12 +97,52 @@ function bindEvents() {
   // Next Question
   document.getElementById('btn-next-question').onclick = nextQuestion;
 
+  document.getElementById('btn-random-lesson').onclick = () => { Audio.click(); startRandomLesson(); };
+  document.getElementById('btn-hint').onclick = () => { showHint(); };
+  document.getElementById('assign-btn-hint').onclick = () => { showAssignHint(); };
+
   // Modals
   document.getElementById('modal-primary-btn').onclick = () => {
     Audio.click();
     closeModal();
     navigate('dashboard');
   };
+}
+
+function startRandomLesson() {
+  const modId = Math.floor(Math.random() * MODULES.length) + 1;
+  const mod = getModule(modId);
+  const lessonIdx = Math.floor(Math.random() * mod.lessons.length);
+  Audio.click();
+  startLesson(modId, lessonIdx);
+}
+
+function showHint() {
+  Audio.click();
+  const s = State.getSession();
+  const qObj = s.lessonQuestions[s.currentQuestionIndex];
+  if (!qObj) return;
+  generateAndShowHint(String(qObj.a));
+}
+
+function showAssignHint() {
+  Audio.click();
+  const s = State.getSession();
+  const qObj = s.assignmentQuestions[s.assignmentIndex];
+  if (!qObj) return;
+  generateAndShowHint(String(qObj.a));
+}
+
+function generateAndShowHint(ans) {
+  if (ans.length > 1 && !isNaN(ans) && !ans.includes('/')) {
+    const firstDigit = ans[0];
+    showToast(`Hint: It's a ${ans.length}-digit number starting with ${firstDigit}.`, 'info', 4000);
+  } else if (!isNaN(ans) && !ans.includes('/')) {
+    const val = parseInt(ans);
+    showToast(`Hint: The answer is between ${val - 2} and ${val + 3}.`, 'info', 4000);
+  } else {
+    showToast(`Hint: Re-read the question and use the blocks carefully.`, 'info', 4000);
+  }
 }
 
 function navigate(viewId, param = null) {
