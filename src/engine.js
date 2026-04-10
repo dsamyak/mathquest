@@ -365,10 +365,10 @@ export const Generator = {
     return items;
   },
   
-  // Generates 100 uniquely randomized questions for the Assignment Challenge
-  generate100Assignment() {
+  // Generates a set of questions for the Gamified Syllabus Task
+  generateSyllabusTask() {
     const items = [];
-    // We mix advanced templates
+    // We mix multiple syllabus topics
     const pool = [
       'template_a_shop_sales',
       'template_b_transfer',
@@ -382,7 +382,8 @@ export const Generator = {
       'fractions_equivalent'
     ];
     
-    for (let i = 0; i < 100; i++) {
+    // Generate a manageable task of 50 questions
+    for (let i = 0; i < 50; i++) {
       const type = rand(pool);
       items.push(this.getQuestion(type));
     }

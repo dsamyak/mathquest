@@ -98,7 +98,6 @@ function bindEvents() {
   document.getElementById('btn-random-lesson').onclick = () => { Audio.click(); startRandomLesson(); };
   document.getElementById('btn-hint').onclick = () => { showHint(); };
   document.getElementById('assign-btn-hint').onclick = () => { showAssignHint(); };
-  document.getElementById('btn-download-cert').onclick = () => { Audio.click(); generateCertificate(); };
 
   // Modals
   document.getElementById('modal-primary-btn').onclick = () => {
@@ -253,7 +252,7 @@ function renderModule(moduleId) {
     
     const html = `
       <div class="lesson-card glass-card ${stateClass}" onclick="window.navToLesson(${mod.id}, ${index})">
-        <div class="lesson-number">${index + 1}</div>
+        <div class="lesson-number">Topic ${index + 1}</div>
         <div class="lesson-info">
           <div class="lesson-name">${lesson.title}</div>
           <div class="lesson-desc">${lesson.desc}</div>
@@ -679,12 +678,13 @@ function finishLesson() {
 
 
 // ==========================================
-// ASSIGNMENT MODE (100 QUESTIONS)
+// ASSIGNMENT MODE (SYLLABUS TASK)
 // ==========================================
 // A simplified runner leveraging the same feedback mechanism
 
 function startAssignment() {
-  const questions = Generator.generate100Assignment();
+  const questions = Generator.generateSyllabusTask();
+  document.getElementById('assign-total').textContent = questions.length;
   State.updateSession({
     assignmentQuestions: questions,
     assignmentIndex: 0,
@@ -790,8 +790,8 @@ function finishAssignment() {
   
   openModal(
     '💯',
-    'Challenge Complete!',
-    `You survived the 100 Question Challenge!`,
+    'Task Complete!',
+    `You conquered the Gamified Syllabus Task!`,
     `<div>Final Score: <b>${score}%</b></div><div>Correct: <b>${s.assignmentCorrect}</b></div>`
   );
   document.getElementById('modal-primary-btn').onclick = () => { closeModal(); navigate('dashboard'); };
