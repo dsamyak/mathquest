@@ -49,6 +49,11 @@ function generateDistractors(correctAnswer, type = 'number') {
     distractors.add(Math.floor(numAns * 1.5));
     distractors.add(numAns + randInt(1, 5));
     distractors.add(numAns - randInt(1, 5));
+  } else if (type === 'small') {
+    // For small numbers (P1 level)
+    distractors.add(Math.max(0, numAns - randInt(1, 3)));
+    distractors.add(numAns + randInt(1, 3));
+    distractors.add(numAns + randInt(4, 6));
   } else {
     // Generic number distractors
     distractors.add(numAns + randInt(1, 10));
@@ -61,18 +66,863 @@ function generateDistractors(correctAnswer, type = 'number') {
   while (distractors.size < 3 || distractors.has(numAns)) {
     distractors.delete(numAns);
     const mod = randInt(-15, 15);
-    if (mod !== 0) distractors.add(Math.max(1, numAns + mod));
+    if (mod !== 0) distractors.add(Math.max(0, numAns + mod));
   }
 
   return Array.from(distractors).slice(0, 3).map(String);
 }
 
 
+/* ================================================================
+   PRIMARY 1 TEMPLATES — Singapore MOE Syllabus
+   ================================================================ */
+
+// Emoji sets for counting visuals
+const COUNT_EMOJI = ['🍎', '⭐', '🌸', '🐟', '🦋', '🍊', '🎈', '🍓', '🐱', '🌻'];
+
+// SVG path data for digit tracing (simplified stroke paths for 0-9)
+const DIGIT_PATHS = {
+  0: [
+    { type: 'ellipse', cx: 50, cy: 55, rx: 28, ry: 38, startAngle: -90 }
+  ],
+  1: [
+    { type: 'line', points: [[38, 30], [50, 18], [50, 92]] }
+  ],
+  2: [
+    { type: 'curve', points: [[25, 35], [25, 18], [50, 14], [75, 18], [75, 35], [25, 90], [75, 90]] }
+  ],
+  3: [
+    { type: 'curve', points: [[25, 20], [50, 14], [72, 20], [72, 40], [50, 50], [72, 60], [72, 80], [50, 90], [25, 84]] }
+  ],
+  4: [
+    { type: 'line', points: [[60, 18], [20, 65], [78, 65]] },
+    { type: 'line', points: [[60, 18], [60, 92]] }
+  ],
+  5: [
+    { type: 'line', points: [[68, 18], [30, 18], [28, 50]] },
+    { type: 'curve', points: [[28, 50], [50, 42], [72, 55], [72, 72], [50, 90], [28, 82]] }
+  ],
+  6: [
+    { type: 'curve', points: [[65, 20], [50, 14], [28, 30], [25, 60], [25, 75], [40, 90], [60, 90], [72, 75], [72, 62], [60, 48], [40, 48], [25, 60]] }
+  ],
+  7: [
+    { type: 'line', points: [[25, 18], [75, 18], [45, 92]] }
+  ],
+  8: [
+    { type: 'curve', points: [[50, 50], [28, 38], [28, 22], [50, 14], [72, 22], [72, 38], [50, 50], [25, 65], [25, 78], [50, 90], [75, 78], [75, 65], [50, 50]] }
+  ],
+  9: [
+    { type: 'curve', points: [[72, 40], [60, 28], [40, 28], [28, 40], [28, 50], [40, 60], [60, 60], [72, 48], [72, 30], [72, 70], [55, 90]] }
+  ]
+};
+
+// Number words for Primary 1
+const NUMBER_WORDS = [
+  'zero', 'one', 'two', 'three', 'four', 'five',
+  'six', 'seven', 'eight', 'nine', 'ten',
+  'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
+  'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'
+];
+
+// Shape data
+const SHAPES_2D = [
+  { name: 'circle', sides: 0, desc: 'round with no corners' },
+  { name: 'triangle', sides: 3, desc: '3 straight sides and 3 corners' },
+  { name: 'rectangle', sides: 4, desc: '4 sides with opposite sides equal' },
+  { name: 'square', sides: 4, desc: '4 equal sides and 4 right angles' },
+];
+
+const SHAPES_3D = [
+  { name: 'cube', faces: 6, desc: '6 square faces, all the same size', example: 'a dice' },
+  { name: 'cuboid', faces: 6, desc: '6 rectangular faces', example: 'a box' },
+  { name: 'cylinder', faces: 3, desc: '2 flat circular faces and 1 curved surface', example: 'a can' },
+  { name: 'cone', faces: 2, desc: '1 flat circular face and 1 pointed top', example: 'an ice cream cone' },
+  { name: 'sphere', faces: 1, desc: '1 curved surface, perfectly round', example: 'a ball' },
+];
+
+const SHAPE_EMOJI = {
+  circle: '⚪', triangle: '🔺', rectangle: '🟦', square: '🟧',
+  cube: '🎲', cuboid: '📦', cylinder: '🥫', cone: '🍦', sphere: '⚽'
+};
+
+
 /* --- Core Templates --- */
 
 const Templates = {
-  // === Module 1 & 2 Basics ===
-  
+
+  /* ================================================================
+     PRIMARY 1: NUMBER TRACING (Interactive Canvas)
+     ================================================================ */
+  number_tracing() {
+    const digit = randInt(0, 9);
+    return {
+      builderType: 'tracing',
+      q: `Trace the number <span class="trace-digit-display">${digit}</span> by following the guide below!`,
+      digit: digit,
+      paths: DIGIT_PATHS[digit],
+      a: String(digit), // answer is the digit itself (auto-checked by tracing)
+    };
+  },
+
+  /* ================================================================
+     PRIMARY 1: COUNTING TO 10
+     ================================================================ */
+  counting_10() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Count emoji objects
+      const count = randInt(1, 10);
+      const emoji = rand(COUNT_EMOJI);
+      const display = (emoji + ' ').repeat(count);
+      return {
+        q: `Count the objects:<br><span class="emoji-objects">${display}</span><br>How many ${emoji} are there?`,
+        a: String(count),
+        choices: shuffle([String(count), ...generateDistractors(count, 'small')])
+      };
+    } else if (type === 2) {
+      // Match numeral to word
+      const num = randInt(1, 10);
+      const word = NUMBER_WORDS[num];
+      return {
+        q: `What number is <strong>"${word}"</strong>?`,
+        a: String(num),
+        choices: shuffle([String(num), ...generateDistractors(num, 'small')])
+      };
+    } else if (type === 3) {
+      // What comes after
+      const num = randInt(0, 8);
+      const ans = num + 1;
+      return {
+        q: `What number comes just after <strong>${num}</strong>?`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(num), String(ans + 1), String(Math.max(0, num - 1))])
+      };
+    } else {
+      // What comes before
+      const num = randInt(2, 10);
+      const ans = num - 1;
+      return {
+        q: `What number comes just before <strong>${num}</strong>?`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(num), String(num + 1), String(Math.max(0, ans - 1))])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: COUNTING TO 20
+     ================================================================ */
+  counting_20() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Ten-frame question
+      const count = randInt(11, 20);
+      const tens = Math.floor(count / 10);
+      const ones = count % 10;
+      const tenFrame = '🔵'.repeat(10) + ' ' + '🔵'.repeat(ones) + '⚪'.repeat(10 - ones);
+      return {
+        q: `Look at the ten-frame:<br><span class="ten-frame">${tenFrame}</span><br>How many dots are filled in?`,
+        a: String(count),
+        choices: shuffle([String(count), ...generateDistractors(count, 'small')])
+      };
+    } else if (type === 2) {
+      // Number word matching for teens
+      const num = randInt(11, 20);
+      const word = NUMBER_WORDS[num];
+      return {
+        q: `Write the number for the word <strong>"${word}"</strong>.`,
+        a: String(num),
+        choices: shuffle([String(num), ...generateDistractors(num, 'small')])
+      };
+    } else if (type === 3) {
+      // Compose tens and ones
+      const tens = 1;
+      const ones = randInt(0, 9);
+      const ans = tens * 10 + ones;
+      return {
+        q: `What number is <strong>${tens} ten</strong> and <strong>${ones} ones</strong>?`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + 1), String(ones), String(10 + ones + 1)])
+      };
+    } else {
+      // What is between
+      const num = randInt(11, 18);
+      return {
+        q: `What number is between <strong>${num}</strong> and <strong>${num + 2}</strong>?`,
+        a: String(num + 1),
+        choices: shuffle([String(num + 1), String(num), String(num + 2), String(num + 3)])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: COUNTING TO 100
+     ================================================================ */
+  counting_100() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Skip counting by 2s
+      const start = randInt(0, 10) * 2;
+      const seq = [start, start + 2, start + 4];
+      const ans = start + 6;
+      return {
+        q: `Count by 2s: ${seq.join(', ')}, ___`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(ans + 2)])
+      };
+    } else if (type === 2) {
+      // Skip counting by 5s
+      const start = randInt(0, 6) * 5;
+      const seq = [start, start + 5, start + 10];
+      const ans = start + 15;
+      return {
+        q: `Count by 5s: ${seq.join(', ')}, ___`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + 5), String(ans - 5), String(ans + 1)])
+      };
+    } else if (type === 3) {
+      // Skip counting by 10s
+      const start = randInt(1, 4) * 10;
+      const seq = [start, start + 10, start + 20];
+      const ans = start + 30;
+      return {
+        q: `Count by 10s: ${seq.join(', ')}, ___`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + 10), String(ans - 10), String(ans + 5)])
+      };
+    } else {
+      // Place value: tens and ones
+      const tens = randInt(2, 9);
+      const ones = randInt(0, 9);
+      const ans = tens * 10 + ones;
+      return {
+        q: `What number has <strong>${tens} tens</strong> and <strong>${ones} ones</strong>?`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(tens + ones), String(ones * 10 + tens), String(ans + 10)])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: COMPARING & ORDERING
+     ================================================================ */
+  comparing_ordering() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Greater or smaller 
+      const a = randInt(1, 50);
+      let b = randInt(1, 50);
+      while (b === a) b = randInt(1, 50);
+      const bigger = Math.max(a, b);
+      return {
+        q: `Which number is <strong>greater</strong>: <strong>${a}</strong> or <strong>${b}</strong>?`,
+        a: String(bigger),
+        choices: shuffle([String(a), String(b)])
+      };
+    } else if (type === 2) {
+      // Which is smallest
+      const nums = [randInt(1, 30), randInt(31, 60), randInt(61, 99)];
+      const smallest = Math.min(...nums);
+      return {
+        q: `Which is the <strong>smallest</strong> number?<br>${shuffle(nums).join(' , ')}`,
+        a: String(smallest),
+        choices: shuffle(nums.map(String))
+      };
+    } else if (type === 3) {
+      // Arrange ascending
+      const base = randInt(10, 50);
+      const a = base, b = base + randInt(3, 10), c = base + randInt(12, 25);
+      const shuffled = shuffle([a, b, c]);
+      const sorted = [a, b, c].join(', ');
+      return {
+        q: `Arrange in order from <strong>smallest to greatest</strong>:<br>${shuffled.join(', ')}`,
+        a: sorted,
+        choices: shuffle([sorted, [c, b, a].join(', '), [b, a, c].join(', '), [a, c, b].join(', ')])
+      };
+    } else {
+      // Compare with symbols
+      const a = randInt(1, 40);
+      let b = randInt(1, 40);
+      while (b === a) b = randInt(1, 40);
+      const ans = a > b ? '>' : '<';
+      return {
+        q: `Fill in the blank: <strong>${a}</strong> ___ <strong>${b}</strong>`,
+        a: ans,
+        choices: shuffle(['>', '<', '='])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: NUMBER BONDS
+     ================================================================ */
+  number_bonds() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Number bonds — find the missing part to make 10
+      const part = randInt(1, 9);
+      const ans = 10 - part;
+      return {
+        q: `Number bond: <strong>${part}</strong> and <strong>___</strong> make <strong>10</strong>.`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+      };
+    } else if (type === 2) {
+      // Number bond — find the whole
+      const a = randInt(1, 8);
+      const b = randInt(1, 10 - a);
+      const ans = a + b;
+      return {
+        q: `<strong>${a}</strong> and <strong>${b}</strong> make <strong>___</strong>.`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(a * b)])
+      };
+    } else if (type === 3) {
+      // Number bonds to 5
+      const part = randInt(0, 5);
+      const ans = 5 - part;
+      return {
+        q: `Number bond: <strong>${part}</strong> + <strong>___</strong> = <strong>5</strong>`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+      };
+    } else {
+      // Decompose a number
+      const total = randInt(5, 10);
+      const part1 = randInt(1, total - 1);
+      const part2 = total - part1;
+      return {
+        q: `Break <strong>${total}</strong> into two parts. If one part is <strong>${part1}</strong>, what is the other?`,
+        a: String(part2),
+        choices: shuffle([String(part2), String(part2 + 1), String(part2 - 1 >= 0 ? part2 - 1 : part2 + 2), String(total)])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: ADDITION WITHIN 20
+     ================================================================ */
+  addition_within_20() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Simple addition with picture story
+      const a = randInt(1, 10);
+      const b = randInt(1, 10 - Math.max(0, a - 10));
+      const bClamped = Math.min(b, 20 - a);
+      const ans = a + bClamped;
+      const emoji = rand(COUNT_EMOJI);
+      return {
+        q: `${rand(NAMES)} has ${a} ${emoji}. ${rand(NAMES)} gives ${bClamped} more ${emoji}.<br>How many ${emoji} are there now?`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+      };
+    } else if (type === 2) {
+      // Vertical addition
+      const a = randInt(3, 12);
+      const b = randInt(2, Math.min(8, 20 - a));
+      const ans = a + b;
+      return {
+        q: `What is <strong>${a} + ${b}</strong> = ?`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+      };
+    } else if (type === 3) {
+      // Missing addend
+      const ans = randInt(1, 9);
+      const total = randInt(ans + 2, Math.min(20, ans + 10));
+      const other = total - ans;
+      return {
+        q: `<strong>${other}</strong> + ___ = <strong>${total}</strong>`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+      };
+    } else {
+      // Adding zero
+      const a = randInt(1, 20);
+      return {
+        q: `What is <strong>${a} + 0</strong> = ?`,
+        a: String(a),
+        choices: shuffle([String(a), String(a + 1), String(0), String(a - 1)])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: SUBTRACTION WITHIN 20
+     ================================================================ */
+  subtraction_within_20() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Take-away story
+      const total = randInt(5, 20);
+      const take = randInt(1, total - 1);
+      const ans = total - take;
+      const emoji = rand(COUNT_EMOJI);
+      return {
+        q: `${rand(NAMES)} has ${total} ${emoji} and gives away ${take}.<br>How many ${emoji} are left?`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+      };
+    } else if (type === 2) {
+      // Simple subtraction
+      const a = randInt(5, 20);
+      const b = randInt(1, a - 1);
+      const ans = a - b;
+      return {
+        q: `What is <strong>${a} − ${b}</strong> = ?`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+      };
+    } else if (type === 3) {
+      // Find the difference
+      const a = randInt(8, 20);
+      const b = randInt(1, a - 2);
+      const diff = a - b;
+      return {
+        q: `What is the difference between <strong>${a}</strong> and <strong>${b}</strong>?`,
+        a: String(diff),
+        choices: shuffle([String(diff), ...generateDistractors(diff, 'small')])
+      };
+    } else {
+      // Missing subtrahend
+      const total = randInt(8, 20);
+      const ans = randInt(1, total - 1);
+      const result = total - ans;
+      return {
+        q: `<strong>${total}</strong> − ___ = <strong>${result}</strong>`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: ADDITION & SUBTRACTION WITHIN 40
+     ================================================================ */
+  add_sub_within_40() {
+    const isAdd = rand([true, false]);
+    const type = randInt(1, 3);
+
+    if (isAdd) {
+      const a = randInt(10, 25);
+      const b = randInt(5, Math.min(15, 40 - a));
+      const ans = a + b;
+      
+      if (type === 1) {
+        return {
+          q: `What is <strong>${a} + ${b}</strong> = ?`,
+          a: String(ans),
+          choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        };
+      } else if (type === 2) {
+        const emoji = rand(COUNT_EMOJI);
+        return {
+          q: `There are ${a} ${emoji} in Box A and ${b} ${emoji} in Box B.<br>How many ${emoji} altogether?`,
+          a: String(ans),
+          choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        };
+      } else {
+        // Missing addend
+        return {
+          q: `${a} + ___ = <strong>${ans}</strong>`,
+          a: String(b),
+          choices: shuffle([String(b), ...generateDistractors(b, 'small')])
+        };
+      }
+    } else {
+      const a = randInt(20, 40);
+      const b = randInt(5, a - 5);
+      const ans = a - b;
+
+      if (type === 1) {
+        return {
+          q: `What is <strong>${a} − ${b}</strong> = ?`,
+          a: String(ans),
+          choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        };
+      } else if (type === 2) {
+        return {
+          q: `${rand(NAMES)} had ${a} ${rand(ITEMS)}. ${randInt(1, 1) ? 'He' : 'She'} used ${b}. How many are left?`,
+          a: String(ans),
+          choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        };
+      } else {
+        return {
+          q: `<strong>${a}</strong> − ___ = <strong>${ans}</strong>`,
+          a: String(b),
+          choices: shuffle([String(b), ...generateDistractors(b, 'small')])
+        };
+      }
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: LENGTH & MASS (Measurement)
+     ================================================================ */
+  length_mass() {
+    const type = randInt(1, 4);
+    const objectsLong = ['pencil', 'ribbon', 'straw', 'stick', 'rope', 'ruler'];
+    const objectsHeavy = ['watermelon', 'bag of rice', 'book', 'chair', 'box'];
+    const objectsLight = ['feather', 'leaf', 'paper clip', 'marble', 'coin'];
+
+    if (type === 1) {
+      // Which is longer/taller?
+      const a = rand(objectsLong);
+      let b = rand(objectsLong);
+      while (a === b) b = rand(objectsLong);
+      const aLen = randInt(5, 20);
+      const bLen = randInt(5, 20);
+      while (aLen === bLen) { /* force different */ }
+      const longer = aLen > bLen ? a : b;
+      return {
+        q: `A ${a} is ${aLen} cm long. A ${b} is ${bLen} cm long.<br>Which is <strong>longer</strong>?`,
+        a: longer,
+        choices: shuffle([a, b])
+      };
+    } else if (type === 2) {
+      // Which is heavier?
+      const heavy = rand(objectsHeavy);
+      const light = rand(objectsLight);
+      return {
+        q: `Which is <strong>heavier</strong>: a <strong>${heavy}</strong> or a <strong>${light}</strong>?`,
+        a: heavy,
+        choices: shuffle([heavy, light])
+      };
+    } else if (type === 3) {
+      // Ordering by length
+      const lengths = [randInt(2, 8), randInt(10, 16), randInt(18, 25)];
+      const shuffledL = shuffle(lengths);
+      const shortest = Math.min(...lengths);
+      return {
+        q: `Three ribbons are ${shuffledL[0]} cm, ${shuffledL[1]} cm, and ${shuffledL[2]} cm long.<br>Which is the <strong>shortest</strong>?`,
+        a: `${shortest} cm`,
+        choices: shuffle(shuffledL.map(l => `${l} cm`))
+      };
+    } else {
+      // Compare units
+      const obj = rand(objectsLong);
+      const units = randInt(3, 15);
+      return {
+        q: `A ${obj} is about <strong>${units} paper clips</strong> long.<br>Another ${obj} is about <strong>${units + randInt(2, 5)} paper clips</strong> long.<br>Which ${obj} is <strong>shorter</strong>?`,
+        a: `The first ${obj}`,
+        choices: shuffle([`The first ${obj}`, `The second ${obj}`])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: TELLING TIME
+     ================================================================ */
+  telling_time_p1() {
+    const type = randInt(1, 3);
+
+    if (type === 1) {
+      // O'clock
+      const hour = randInt(1, 12);
+      const ans = `${hour} o'clock`;
+      // Build a text-based clock representation
+      return {
+        q: `🕐 The short hand points to <strong>${hour}</strong> and the long hand points to <strong>12</strong>.<br>What time is it?`,
+        a: ans,
+        choices: shuffle([ans, `${hour === 12 ? 1 : hour + 1} o'clock`, `half past ${hour}`, `${hour === 1 ? 12 : hour - 1} o'clock`])
+      };
+    } else if (type === 2) {
+      // Half past
+      const hour = randInt(1, 12);
+      const ans = `half past ${hour}`;
+      return {
+        q: `🕐 The short hand is between <strong>${hour}</strong> and <strong>${hour === 12 ? 1 : hour + 1}</strong>. The long hand points to <strong>6</strong>.<br>What time is it?`,
+        a: ans,
+        choices: shuffle([ans, `${hour} o'clock`, `half past ${hour === 12 ? 1 : hour + 1}`, `${hour === 12 ? 1 : hour + 1} o'clock`])
+      };
+    } else {
+      // Match time to activity
+      const activities = [
+        { time: '7 o\'clock', activity: 'wake up for school' },
+        { time: '12 o\'clock', activity: 'eat lunch' },
+        { time: '3 o\'clock', activity: 'school ends' },
+        { time: '8 o\'clock', activity: 'go to bed' },
+        { time: 'half past 6', activity: 'eat dinner' },
+      ];
+      const item = rand(activities);
+      return {
+        q: `${rand(NAMES)} usually ${item.activity}. What time might that be?`,
+        a: item.time,
+        choices: shuffle(activities.slice(0, 4).map(a => a.time))
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: 2D & 3D SHAPES
+     ================================================================ */
+  shapes_2d_3d() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Identify 2D shape by description
+      const shape = rand(SHAPES_2D);
+      return {
+        q: `I am a shape that is ${shape.desc}.<br>What am I? ${SHAPE_EMOJI[shape.name] || ''}`,
+        a: shape.name,
+        choices: shuffle(SHAPES_2D.map(s => s.name))
+      };
+    } else if (type === 2) {
+      // Count sides
+      const shape = rand(SHAPES_2D.filter(s => s.sides > 0));
+      return {
+        q: `How many sides does a <strong>${shape.name}</strong> ${SHAPE_EMOJI[shape.name] || ''} have?`,
+        a: String(shape.sides),
+        choices: shuffle([String(shape.sides), '2', '5', String(shape.sides + 1)])
+      };
+    } else if (type === 3) {
+      // 3D shape identification
+      const shape = rand(SHAPES_3D);
+      return {
+        q: `This 3D shape looks like <strong>${shape.example}</strong>. It has ${shape.desc}.<br>What shape is it? ${SHAPE_EMOJI[shape.name] || ''}`,
+        a: shape.name,
+        choices: shuffle(SHAPES_3D.slice(0, 4).map(s => s.name))
+      };
+    } else {
+      // Match shape to real object
+      const pairs = [
+        { shape: 'sphere', obj: 'a ball' },
+        { shape: 'cube', obj: 'a dice' },
+        { shape: 'cylinder', obj: 'a tin can' },
+        { shape: 'cone', obj: 'an ice cream cone' },
+        { shape: 'cuboid', obj: 'a cereal box' },
+      ];
+      const pair = rand(pairs);
+      return {
+        q: `${SHAPE_EMOJI[pair.shape] || ''} What shape is <strong>${pair.obj}</strong>?`,
+        a: pair.shape,
+        choices: shuffle(pairs.slice(0, 4).map(p => p.shape))
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: PICTURE GRAPHS
+     ================================================================ */
+  picture_graphs() {
+    const type = randInt(1, 3);
+    const fruits = ['🍎', '🍊', '🍌', '🍇'];
+    const fruitNames = ['Apples', 'Oranges', 'Bananas', 'Grapes'];
+    const counts = [randInt(1, 6), randInt(1, 6), randInt(1, 6), randInt(1, 6)];
+
+    // Build a text-based picture graph
+    let graph = '<div class="picture-graph">';
+    for (let i = 0; i < 4; i++) {
+      graph += `<div class="graph-row"><span class="graph-label">${fruitNames[i]}</span><span class="graph-icons">${fruits[i].repeat(counts[i])}</span></div>`;
+    }
+    graph += '</div>';
+
+    if (type === 1) {
+      // How many of X?
+      const idx = randInt(0, 3);
+      return {
+        q: `Look at the picture graph:<br>${graph}<br>How many <strong>${fruitNames[idx]}</strong> are there?`,
+        a: String(counts[idx]),
+        choices: shuffle([String(counts[idx]), ...generateDistractors(counts[idx], 'small')])
+      };
+    } else if (type === 2) {
+      // Which has the most?
+      const maxVal = Math.max(...counts);
+      const maxIdx = counts.indexOf(maxVal);
+      return {
+        q: `Look at the picture graph:<br>${graph}<br>Which fruit has the <strong>most</strong>?`,
+        a: fruitNames[maxIdx],
+        choices: shuffle(fruitNames.slice())
+      };
+    } else {
+      // How many more X than Y?
+      const i = 0, j = 1;
+      const diff = Math.abs(counts[i] - counts[j]);
+      const more = counts[i] > counts[j] ? fruitNames[i] : fruitNames[j];
+      const fewer = counts[i] > counts[j] ? fruitNames[j] : fruitNames[i];
+      return {
+        q: `Look at the picture graph:<br>${graph}<br>How many more <strong>${more}</strong> than <strong>${fewer}</strong>?`,
+        a: String(diff),
+        choices: shuffle([String(diff), ...generateDistractors(diff, 'small')])
+      };
+    }
+  },
+
+  /* ================================================================
+     PRIMARY 1: PATTERNS
+     ================================================================ */
+  patterns() {
+    const type = randInt(1, 4);
+
+    if (type === 1) {
+      // Number pattern +1
+      const start = randInt(1, 15);
+      const seq = [start, start + 1, start + 2];
+      const ans = start + 3;
+      return {
+        q: `What comes next? <strong>${seq.join(', ')}, ___</strong>`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(start)])
+      };
+    } else if (type === 2) {
+      // Number pattern +2
+      const start = randInt(1, 10);
+      const seq = [start, start + 2, start + 4];
+      const ans = start + 6;
+      return {
+        q: `What comes next? <strong>${seq.join(', ')}, ___</strong>`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + 1), String(ans + 2), String(ans - 2)])
+      };
+    } else if (type === 3) {
+      // Shape pattern
+      const patternSets = [
+        { pattern: ['🔴', '🔵', '🔴', '🔵', '🔴'], ans: '🔵', options: ['🔵', '🔴', '🟢', '🟡'] },
+        { pattern: ['⭐', '⭐', '🌙', '⭐', '⭐'], ans: '🌙', options: ['🌙', '⭐', '☀️', '🌟'] },
+        { pattern: ['🔺', '🔺', '⬜', '🔺', '🔺'], ans: '⬜', options: ['⬜', '🔺', '⚪', '🟦'] },
+        { pattern: ['🟢', '🟡', '🟢', '🟡', '🟢'], ans: '🟡', options: ['🟡', '🟢', '🔵', '🔴'] },
+      ];
+      const p = rand(patternSets);
+      return {
+        q: `What comes next in the pattern?<br><span class="pattern-display">${p.pattern.join(' ')} ___</span>`,
+        a: p.ans,
+        choices: shuffle(p.options)
+      };
+    } else {
+      // Decreasing pattern
+      const start = randInt(15, 25);
+      const seq = [start, start - 1, start - 2];
+      const ans = start - 3;
+      return {
+        q: `What comes next? <strong>${seq.join(', ')}, ___</strong>`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(start)])
+      };
+    }
+  },
+
+
+  /* ================================================================
+     PRIMARY 2 & GENERAL TEMPLATES (Existing)
+     ================================================================ */
+
+  /* === Numbers to 1,000 (Creative & Step-by-Step) === */
+  place_value_1000() {
+    // Variety of number-related learning tasks going step-by-step
+    const type = randInt(1, 4);
+    
+    if (type === 1) {
+      // Place Value Digit
+      const num = randInt(100, 999);
+      const strNum = String(num);
+      const pos = randInt(0, 2); // 0: hundreds, 1: tens, 2: ones
+      const digit = parseInt(strNum[pos]);
+      const ans = digit * Math.pow(10, 2 - pos);
+      
+      // Ensure unique choices by using a Set
+      const choices = new Set([String(ans), String(digit), String(digit * 10), String(digit * 100)]);
+      while (choices.size < 4) choices.add(String(randInt(1, 9) * 10)); // pad if overlapping
+      
+      return {
+        q: `In the number ${num}, what is the place value of the digit ${digit}?`,
+        a: String(ans),
+        choices: shuffle(Array.from(choices).slice(0, 4))
+      };
+    } else if (type === 2) {
+      // Expanded form
+      const h = randInt(1, 9) * 100;
+      const t = randInt(1, 9) * 10;
+      const o = randInt(1, 9);
+      const ans = h + t + o;
+      return {
+        q: `What number do we get by expanding: ${h} + ${t} + ${o} = ?`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'number')])
+      };
+    } else if (type === 3) {
+      // More/Less
+      const num = randInt(100, 899);
+      const change = rand([10, 100]);
+      const more = rand([true, false]);
+      const ans = more ? num + change : num - change;
+      const wrong1 = String(num + 10);
+      const wrong2 = String(num - 10);
+      const wrong3 = String(num + 100);
+      
+      return {
+        q: `What is ${change} ${more ? 'more' : 'less'} than ${num}?`,
+        a: String(ans),
+        // Filter out the answer from the wrong choices, then add it back
+        choices: shuffle([wrong1, wrong2, wrong3].filter(x => x !== String(ans)).slice(0, 3).concat(String(ans)))
+      };
+    } else {
+      // Composition
+      const h = randInt(2, 9);
+      const t = randInt(1, 9);
+      const o = randInt(1, 9);
+      const ans = h * 100 + t * 10 + o;
+      return {
+        q: `Combine the blocks creatively: ${h} hundreds, ${t} tens, and ${o} ones.`,
+        a: String(ans),
+        choices: shuffle([String(ans), String((h-1)*100 + t*10 + o), String(o*100 + t*10 + h), String(h*100 + o*10 + t)])
+      };
+    }
+  },
+
+  /* === Numbers to 100,000 (Advanced & Creative) === */
+  place_value_10000() {
+    const type = randInt(1, 3);
+    
+    if (type === 1) {
+      // Place Value Digit in 5-digit number
+      const num = randInt(10000, 99999);
+      const strNum = String(num);
+      const pos = randInt(0, 4); 
+      const digit = parseInt(strNum[pos]);
+      const ans = digit * Math.pow(10, 4 - pos);
+      
+      const choices = new Set([
+        String(ans), 
+        String(digit * Math.pow(10, 5 - pos) || digit*1000), 
+        String(digit * Math.pow(10, 3 - pos) || digit*10), 
+        String(digit)
+      ]);
+      while (choices.size < 4) choices.add(String(randInt(10, 99)*100)); // pad
+      
+      return {
+        q: `In the large number ${num}, what is the actual value of the digit ${digit}?`,
+        a: String(ans),
+        choices: shuffle(Array.from(choices).slice(0, 4))
+      };
+    } else if (type === 2) {
+      // Rounding
+      const num = randInt(10000, 99999);
+      const toNearest = rand([100, 1000]);
+      const ans = Math.round(num / toNearest) * toNearest;
+      return {
+        q: `Here's a challenge: Round ${num} to the nearest ${toNearest}.`,
+        a: String(ans),
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'number')])
+      };
+    } else {
+      // Pattern Completion
+      const start = randInt(10000, 80000);
+      const step = rand([100, 1000, 10000]);
+      const ans = start + step * 3;
+      return {
+        q: `Look at the pattern and complete it: ${start}, ${start + step}, ${start + step * 2}, ___`,
+        a: String(ans),
+        choices: shuffle([String(ans), String(ans + step), String(ans - step), String(start + step * 4)])
+      };
+    }
+  },  
   addition_simple() {
     const a = randInt(10, 40);
     const b = randInt(10, 40);
@@ -264,8 +1114,6 @@ const Templates = {
   // These are the complex problems from the textbook
 
   template_a_shop_sales() {
-    // Template A (File Shop): "A shopkeeper sold [X] items on Saturday. It sold [Y] fewer items on Sunday. It sold [Z] times as many items on Sunday as on Monday. At $[W] each, how much money did he get Monday?"
-    
     const w = randInt(2, 6); // price
     const z = randInt(2, 4); // multiplier
     const mondayCount = randInt(50, 200); 
@@ -283,8 +1131,6 @@ const Templates = {
   },
 
   template_b_transfer() {
-    // Template B (Transfer Problem): "[Person A] and [Person B] had items. After [B] gave [X] items to [A], [A] had [Y] items. [B] then had [Z] fewer items than [A]. How many did [B] have at first?"
-    
     const nameA = rand(NAMES);
     let nameB = rand(NAMES);
     while (nameA === nameB) nameB = rand(NAMES);
@@ -305,7 +1151,6 @@ const Templates = {
   },
   
   template_guess_check() {
-    // "Guess and Check" money problem (46 total $5 and $2 notes valuing $149)
     const valA = randInt(0, 1) === 0 ? 5 : 10;
     const valB = 2; // Keep it simple: 2
     
@@ -326,6 +1171,127 @@ const Templates = {
       },
       a: String(qtyA)
     };
+  },
+
+  /* === Remaining Core Templates === */
+  addition_4digit() {
+    // Addition within 1000 for P2
+    const a = randInt(100, 500);
+    const b = randInt(100, 499);
+    const ans = a + b;
+    return {
+      q: `What is ${a} + ${b}?`,
+      a: String(ans),
+      choices: shuffle([String(ans), ...generateDistractors(ans, 'addition')])
+    };
+  },
+
+  money_basic() {
+    const d = randInt(1, 50);
+    const c = randInt(5, 95);
+    const ans = `$${d}.${c < 10 ? '0' + c : c}`;
+    const wrong1 = `$${c}.${d < 10 ? '0' + d : d}`;
+    const wrong2 = `$${d}${c}`;
+    const wrong3 = `$${d + 1}.00`;
+    return {
+      q: `What is the written value of ${d} dollars and ${c} cents?`,
+      a: ans,
+      choices: shuffle([ans, wrong1, wrong2, wrong3])
+    };
+  },
+
+  time_basic() {
+    const hours = randInt(1, 12);
+    const mins = rand([0, 15, 30, 45]);
+    const strMins = mins === 0 ? '00' : String(mins);
+    const ans = `${hours} ${mins === 0 ? "o'clock" : mins}`;
+    return {
+      q: `How do you read the time ${hours}:${strMins}?`,
+      a: ans,
+      choices: shuffle([ans, `${hours + 1} ${mins === 0 ? "o'clock" : mins}`, `${hours}:${strMins}`, `Half past ${hours}`])
+    };
+  },
+  
+  area_perimeter() {
+    const length = randInt(4, 12);
+    const width = randInt(2, 8);
+    const isArea = rand([true, false]);
+    if (isArea) {
+      const ans = length * width;
+      return {
+        q: `What is the area of a rectangle with length ${length}cm and width ${width}cm?`,
+        a: `${ans} cm²`,
+        choices: shuffle([`${ans} cm²`, `${length * width + 2} cm²`, `${(length + width) * 2} cm²`, `${length + width} cm²`])
+      };
+    } else {
+      const ans = (length + width) * 2;
+      return {
+        q: `What is the perimeter of a rectangle with length ${length}cm and width ${width}cm?`,
+        a: `${ans} cm`,
+        choices: shuffle([`${ans} cm`, `${length * width} cm`, `${ans + 2} cm`, `${length + width} cm`])
+      };
+    }
+  },
+
+  bar_graphs() {
+    const itemName = rand(ITEMS);
+    const val1 = randInt(10, 50);
+    const val2 = val1 + randInt(5, 20);
+    const diff = val2 - val1;
+    return {
+      q: `A bar graph shows ${val1} ${itemName} for Group A and ${val2} for Group B. How many more ${itemName} does Group B have?`,
+      a: String(diff),
+      choices: shuffle([String(diff), String(val1 + val2), String(diff + 5), String(val2)])
+    };
+  },
+
+  fractions_add_sub() {
+    const den = randInt(4, 10);
+    const num1 = randInt(1, Math.floor(den/2));
+    const num2 = randInt(1, den - num1 - 1);
+    const ansNum = num1 + num2;
+    return {
+      q: `What is ${num1}/${den} + ${num2}/${den}?`,
+      a: `${ansNum}/${den}`,
+      choices: shuffle([`${ansNum}/${den}`, `${ansNum}/${den*2}`, `${num1+num2+1}/${den}`, `${num1*num2}/${den}`])
+    };
+  },
+
+  angles() {
+    const known = randInt(30, 150);
+    const ans = 180 - known;
+    return {
+      q: `Angles on a straight line add up to 180°. If one angle is ${known}°, what is the unknown angle?`,
+      a: `${ans}°`,
+      choices: shuffle([`${ans}°`, `${90 - known > 0 ? 90 - known : known}°`, `${360 - known}°`, `${ans + 10}°`])
+    };
+  },
+
+  measurement() {
+    const isSpeed = rand([true, false]);
+    if (isSpeed) {
+      const speed = randInt(40, 90);
+      const hours = randInt(2, 5);
+      const dist = speed * hours;
+      return {
+        q: `A car travels at a speed of ${speed} km/h for ${hours} hours. What is the distance covered?`,
+        a: `${dist} km`,
+        choices: shuffle([`${dist} km`, `${speed + hours} km`, `${dist + 10} km`, `${speed * (hours-1)} km`])
+      };
+    } else {
+      const kg = randInt(2, 9);
+      const g = randInt(50, 950);
+      return {
+        q: `Convert ${kg} kg and ${g} g into grams.`,
+        a: `${kg * 1000 + g} g`,
+        choices: shuffle([`${kg * 1000 + g} g`, `${kg + g} g`, `${kg * 100 + g} g`, `${kg * 1000 + g + 100} g`])
+      };
+    }
+  },
+
+  // Alias for guess_check used by lesson questionType
+  guess_check() {
+    return Templates.template_guess_check();
   }
 };
 
@@ -379,7 +1345,14 @@ export const Generator = {
       'subtraction_regroup',
       'multiplication_tables',
       'division_remainders',
-      'fractions_equivalent'
+      'fractions_equivalent',
+      // P1 topics in the mix
+      'counting_10',
+      'counting_20',
+      'number_bonds',
+      'addition_within_20',
+      'subtraction_within_20',
+      'patterns'
     ];
     
     // Generate a manageable task of 50 questions

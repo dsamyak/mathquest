@@ -215,11 +215,11 @@ export const State = {
     if (s.completedLessons.length >= 1 && !this.hasBadge('first_steps')) {
       if (this.earnBadge('first_steps')) newBadges.push('first_steps');
     }
-    // Number Ninja - complete all Module 1
+    // Number Ninja - complete all Module 1 (Primary 1 — 14 lessons)
     if (this.getModuleProgress(1, 14) >= 14 && !this.hasBadge('number_ninja')) {
       if (this.earnBadge('number_ninja')) newBadges.push('number_ninja');
     }
-    // Block Builder - complete 3 builder lessons
+    // Block Builder - complete 5 builder lessons
     if (s.completedLessons.length >= 5 && !this.hasBadge('block_builder')) {
       if (this.earnBadge('block_builder')) newBadges.push('block_builder');
     }
@@ -250,10 +250,11 @@ export const State = {
     if (s.bestStreak >= 20 && !this.hasBadge('fire_streak')) {
       if (this.earnBadge('fire_streak')) newBadges.push('fire_streak');
     }
-    // Math Master - complete all modules
+    // Math Master - complete all modules (P1=14, P2=6, Middle=6, Upper=7)
     if (this.getModuleProgress(1, 14) >= 14 && 
-        this.getModuleProgress(2, 7) >= 7 && 
-        this.getModuleProgress(3, 11) >= 11 && 
+        this.getModuleProgress(2, 6) >= 6 && 
+        this.getModuleProgress(3, 6) >= 6 && 
+        this.getModuleProgress(4, 7) >= 7 &&
         !this.hasBadge('math_master')) {
       if (this.earnBadge('math_master')) newBadges.push('math_master');
     }

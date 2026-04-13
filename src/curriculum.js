@@ -1,16 +1,139 @@
 /* ============================================
    MathQuest — Curriculum Data
+   Singapore MOE Primary Mathematics Syllabus
    All modules, lessons, and their configurations
    ============================================ */
 
 export const MODULES = [
   {
     id: 1,
-    title: 'Lower Primary',
-    subtitle: 'Primary 1 & 2',
-    icon: '🧱',
-    description: 'Build a strong foundation! Master whole numbers up to 1,000, basic fractions, money, time, and 2D/3D shapes using concrete and pictorial blocks.',
+    title: 'Primary 1',
+    subtitle: 'Grade 1 — Singapore MOE',
+    icon: '✏️',
+    description: 'Master the foundations! Learn numbers 0–100, trace and write digits, discover number bonds, add & subtract within 40, tell time, identify shapes, and read picture graphs — the full P1 Singapore syllabus.',
     color: 'primary',
+    lessons: [
+      {
+        title: 'Number Tracing: 0–9',
+        desc: 'Trace and learn to write every digit',
+        type: 'tracing',
+        questionType: 'number_tracing',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Counting to 10',
+        desc: 'Count objects and match to numerals',
+        type: 'quiz',
+        questionType: 'counting_10',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Counting to 20',
+        desc: 'Teens, ten-frames, and number words',
+        type: 'quiz',
+        questionType: 'counting_20',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Counting to 100',
+        desc: 'Skip counting by 2s, 5s, and 10s',
+        type: 'quiz',
+        questionType: 'counting_100',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Comparing & Ordering',
+        desc: 'Greater than, less than, and ordering',
+        type: 'quiz',
+        questionType: 'comparing_ordering',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Number Bonds',
+        desc: 'Making 10 and part-whole thinking',
+        type: 'quiz',
+        questionType: 'number_bonds',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Addition Within 20',
+        desc: 'Adding with stories and pictures',
+        type: 'quiz',
+        questionType: 'addition_within_20',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Subtraction Within 20',
+        desc: 'Take away and find the difference',
+        type: 'quiz',
+        questionType: 'subtraction_within_20',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Addition & Subtraction Within 40',
+        desc: 'Mental maths with bigger numbers',
+        type: 'quiz',
+        questionType: 'add_sub_within_40',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Length & Mass',
+        desc: 'Comparing tall/short, heavy/light',
+        type: 'quiz',
+        questionType: 'length_mass',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Telling Time',
+        desc: "O'clock and half past the hour",
+        type: 'quiz',
+        questionType: 'telling_time_p1',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: '2D & 3D Shapes',
+        desc: 'Circles, triangles, cubes, and more',
+        type: 'quiz',
+        questionType: 'shapes_2d_3d',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Picture Graphs',
+        desc: 'Read and understand simple graphs',
+        type: 'quiz',
+        questionType: 'picture_graphs',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+      {
+        title: 'Patterns',
+        desc: 'Number patterns and shape patterns',
+        type: 'quiz',
+        questionType: 'patterns',
+        questionsPerLesson: 10,
+        xpPerQuestion: 10,
+      },
+    ]
+  },
+  {
+    id: 2,
+    title: 'Primary 2',
+    subtitle: 'Grade 2 — Singapore MOE',
+    icon: '🧱',
+    description: 'Grow your skills! Master numbers to 1,000, learn multiplication & division basics, explore fractions, money, time, and 2D/3D shapes with concrete and pictorial models.',
+    color: 'secondary',
     lessons: [
       {
         title: 'Numbers to 1,000',
@@ -63,12 +186,12 @@ export const MODULES = [
     ]
   },
   {
-    id: 2,
+    id: 3,
     title: 'Middle Primary',
     subtitle: 'Primary 3 & 4',
     icon: '📊',
     description: 'Dive into Visual Model Drawing! Master numbers to 100,000, learn the famous Singapore Bar Model method, and explore area, perimeter, and bar graphs.',
-    color: 'secondary',
+    color: 'warm',
     lessons: [
       {
         title: 'Numbers to 100,000',
@@ -121,12 +244,12 @@ export const MODULES = [
     ]
   },
   {
-    id: 3,
+    id: 4,
     title: 'Upper Primary',
     subtitle: 'Primary 5 & 6',
     icon: '🏆',
     description: 'Conquer advanced heuristics! Master percentages, ratios, rate, and complex algebraic word problems using advanced logical models.',
-    color: 'warm',
+    color: 'danger',
     lessons: [
       {
         title: 'Four Operations with Fractions',

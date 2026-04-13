@@ -49,6 +49,7 @@ const DOM = {
   bldComparison: document.getElementById('builder-comparison'),
   bldGuessCheck: document.getElementById('builder-guess-check'),
   bldQuiz: document.getElementById('builder-quiz'),
+  bldTracing: document.getElementById('builder-tracing'),
   
   // Feedback
   fbOverlay: document.getElementById('feedback-overlay'),
@@ -349,7 +350,10 @@ function renderCurrentQuestion() {
   
   hideAllBuilders();
   
-  if (type === 'part-whole') {
+  if (type === 'tracing') {
+    DOM.bldTracing.style.display = 'block';
+    setupTracingBuilder(qObj);
+  } else if (type === 'part-whole') {
     DOM.bldPartWhole.style.display = 'block';
     setupPartWholeBuilder(qObj);
   } else if (type === 'comparison') {
@@ -370,6 +374,273 @@ function hideAllBuilders() {
   DOM.bldComparison.style.display = 'none';
   DOM.bldGuessCheck.style.display = 'none';
   DOM.bldQuiz.style.display = 'none';
+  DOM.bldTracing.style.display = 'none';
+}
+
+
+// === NUMBER TRACING HANDLER (P1) ===
+function setupTracingBuilder(qObj) {
+  const canvas = document.getElementById('tracing-canvas');
+  const ctx = canvas.getContext('2d');
+  const guide = document.getElementById('tracing-digit-guide');
+  const strokeOrder = document.getElementById('tracing-stroke-order');
+  const scoreFill = document.getElementById('tracing-score-fill');
+  const scoreValue = document.getElementById('tracing-score-value');
+  const submitBtn = document.getElementById('tracing-submit-btn');
+  const clearBtn = document.getElementById('tracing-clear-btn');
+  
+  // Set the guide digit
+  guide.textContent = qObj.digit;
+  
+  // Get actual canvas pixel dimensions
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * (window.devicePixelRatio || 1);
+  canvas.height = rect.height * (window.devicePixelRatio || 1);
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  
+  // Create the guide path on the canvas (dotted outline of the digit)
+  drawGuideDigit(ctx, qObj.digit, rect.width, rect.height);
+  
+  // Show stroke order dots
+  strokeOrder.innerHTML = '';
+  const startPoints = getStrokeStartPoints(qObj.digit, rect.width, rect.height);
+  startPoints.forEach((pt, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'stroke-dot';
+    dot.textContent = i + 1;
+    dot.style.left = `${pt.x}px`;
+    dot.style.top = `${pt.y}px`;
+    strokeOrder.appendChild(dot);
+  });
+  
+  // Drawing state
+  let drawing = false;
+  let strokes = [];
+  let currentStroke = [];
+  
+  // Reset score
+  scoreFill.style.width = '0%';
+  scoreFill.className = 'tracing-score-fill';
+  scoreValue.textContent = '0%';
+  submitBtn.disabled = true;
+  
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - r.left, y: clientY - r.top };
+  }
+  
+  function startDraw(e) {
+    e.preventDefault();
+    drawing = true;
+    currentStroke = [];
+    const pos = getPos(e);
+    currentStroke.push(pos);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    ctx.strokeStyle = '#a855f7';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(168, 85, 247, 0.5)';
+    ctx.shadowBlur = 8;
+  }
+  
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    currentStroke.push(pos);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    
+    // Check if near any stroke dots and mark visited
+    const dots = strokeOrder.querySelectorAll('.stroke-dot');
+    dots.forEach(dot => {
+      const dotX = parseFloat(dot.style.left);
+      const dotY = parseFloat(dot.style.top);
+      const dist = Math.sqrt(Math.pow(pos.x - dotX, 2) + Math.pow(pos.y - dotY, 2));
+      if (dist < 25) {
+        dot.classList.add('visited');
+      }
+    });
+  }
+  
+  function endDraw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    drawing = false;
+    ctx.shadowBlur = 0;
+    if (currentStroke.length > 2) {
+      strokes.push([...currentStroke]);
+    }
+    
+    // Calculate score
+    const score = calculateTracingScore(strokes, qObj.digit, rect.width, rect.height);
+    const pct = Math.min(100, Math.round(score));
+    scoreFill.style.width = `${pct}%`;
+    scoreValue.textContent = `${pct}%`;
+    
+    if (pct >= 70) {
+      scoreFill.className = 'tracing-score-fill great';
+    } else if (pct >= 40) {
+      scoreFill.className = 'tracing-score-fill good';
+    } else {
+      scoreFill.className = 'tracing-score-fill';
+    }
+    
+    submitBtn.disabled = pct < 50;
+  }
+  
+  // Mouse events
+  canvas.onmousedown = startDraw;
+  canvas.onmousemove = draw;
+  canvas.onmouseup = endDraw;
+  canvas.onmouseleave = endDraw;
+  
+  // Touch events
+  canvas.ontouchstart = startDraw;
+  canvas.ontouchmove = draw;
+  canvas.ontouchend = endDraw;
+  
+  // Clear button
+  clearBtn.onclick = () => {
+    Audio.click();
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    drawGuideDigit(ctx, qObj.digit, rect.width, rect.height);
+    strokes = [];
+    currentStroke = [];
+    scoreFill.style.width = '0%';
+    scoreFill.className = 'tracing-score-fill';
+    scoreValue.textContent = '0%';
+    submitBtn.disabled = true;
+    strokeOrder.querySelectorAll('.stroke-dot').forEach(d => d.classList.remove('visited'));
+  };
+  
+  // Submit
+  submitBtn.onclick = () => {
+    const score = calculateTracingScore(strokes, qObj.digit, rect.width, rect.height);
+    handleAnswer(score >= 50, qObj.a, null);
+  };
+}
+
+// Draw a dotted guide outline of the digit on the canvas
+function drawGuideDigit(ctx, digit, w, h) {
+  ctx.save();
+  ctx.font = `bold ${Math.min(w, h) * 0.7}px Outfit, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.setLineDash([6, 8]);
+  ctx.strokeStyle = 'rgba(124, 58, 237, 0.25)';
+  ctx.lineWidth = 3;
+  ctx.strokeText(String(digit), w / 2, h / 2);
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+// Get starting points for stroke-order indicators
+function getStrokeStartPoints(digit, w, h) {
+  const cx = w / 2;
+  const cy = h / 2;
+  const scale = Math.min(w, h) / 100;
+  
+  const startPointsMap = {
+    0: [{ x: cx, y: cy - 38 * scale }],
+    1: [{ x: cx - 8 * scale, y: cy - 30 * scale }],
+    2: [{ x: cx - 15 * scale, y: cy - 30 * scale }],
+    3: [{ x: cx - 10 * scale, y: cy - 35 * scale }],
+    4: [{ x: cx - 15 * scale, y: cy - 30 * scale }, { x: cx + 10 * scale, y: cy - 35 * scale }],
+    5: [{ x: cx + 10 * scale, y: cy - 35 * scale }],
+    6: [{ x: cx + 10 * scale, y: cy - 35 * scale }],
+    7: [{ x: cx - 15 * scale, y: cy - 35 * scale }],
+    8: [{ x: cx, y: cy }],
+    9: [{ x: cx + 10 * scale, y: cy - 10 * scale }],
+  };
+  
+  return startPointsMap[digit] || [{ x: cx, y: cy - 30 * scale }];
+}
+
+// Calculate tracing accuracy using grid-based path coverage
+function calculateTracingScore(strokes, digit, w, h) {
+  if (strokes.length === 0) return 0;
+  
+  // Create a temporary canvas to render the "ideal" digit
+  const idealCanvas = document.createElement('canvas');
+  idealCanvas.width = w;
+  idealCanvas.height = h;
+  const idealCtx = idealCanvas.getContext('2d');
+  
+  // Draw the ideal digit as a filled shape
+  idealCtx.font = `bold ${Math.min(w, h) * 0.7}px Outfit, sans-serif`;
+  idealCtx.textAlign = 'center';
+  idealCtx.textBaseline = 'middle';
+  idealCtx.fillStyle = 'black';
+  idealCtx.fillText(String(digit), w / 2, h / 2);
+  
+  // Get the ideal digit pixels
+  const idealData = idealCtx.getImageData(0, 0, w, h).data;
+  
+  // Create a grid from user strokes
+  const userCanvas = document.createElement('canvas');
+  userCanvas.width = w;
+  userCanvas.height = h;
+  const userCtx = userCanvas.getContext('2d');
+  
+  userCtx.strokeStyle = 'black';
+  userCtx.lineWidth = 10;
+  userCtx.lineCap = 'round';
+  userCtx.lineJoin = 'round';
+  
+  strokes.forEach(stroke => {
+    if (stroke.length < 2) return;
+    userCtx.beginPath();
+    userCtx.moveTo(stroke[0].x, stroke[0].y);
+    for (let i = 1; i < stroke.length; i++) {
+      userCtx.lineTo(stroke[i].x, stroke[i].y);
+    }
+    userCtx.stroke();
+  });
+  
+  const userData = userCtx.getImageData(0, 0, w, h).data;
+  
+  // Sample grid cells (8x8 grid)
+  const gridSize = 8;
+  const cellW = Math.floor(w / gridSize);
+  const cellH = Math.floor(h / gridSize);
+  
+  let idealCells = 0;
+  let matchedCells = 0;
+  let penaltyCells = 0;
+  
+  for (let gy = 0; gy < gridSize; gy++) {
+    for (let gx = 0; gx < gridSize; gx++) {
+      let idealHit = false;
+      let userHit = false;
+      
+      // Sample center of each cell
+      const sx = gx * cellW + Math.floor(cellW / 2);
+      const sy = gy * cellH + Math.floor(cellH / 2);
+      const idx = (sy * w + sx) * 4;
+      
+      if (idx < idealData.length && idealData[idx + 3] > 128) idealHit = true;
+      if (idx < userData.length && userData[idx + 3] > 128) userHit = true;
+      
+      if (idealHit) {
+        idealCells++;
+        if (userHit) matchedCells++;
+      } else if (userHit) {
+        penaltyCells++;
+      }
+    }
+  }
+  
+  if (idealCells === 0) return strokes.length > 0 ? 60 : 0; // Fallback
+  
+  const coverage = matchedCells / idealCells;
+  const penalty = Math.min(0.3, (penaltyCells / (gridSize * gridSize)) * 0.5);
+  
+  return Math.max(0, (coverage - penalty) * 100);
 }
 
 

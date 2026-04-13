@@ -254,6 +254,33 @@
               <button class="btn btn-primary" id="quiz-submit-btn">Check ✓</button>
             </div>
           </div>
+
+          <!-- Number Tracing Builder (P1) -->
+          <div class="builder-canvas" id="builder-tracing" style="display:none;">
+            <div class="builder-label">✏️ Trace the number by drawing on the canvas below:</div>
+            <div class="tracing-container">
+              <div class="tracing-digit-guide" id="tracing-digit-guide">
+                <!-- Large faded digit rendered by JS -->
+              </div>
+              <canvas id="tracing-canvas" width="300" height="350"></canvas>
+              <div class="tracing-stroke-order" id="tracing-stroke-order">
+                <!-- Numbered dots for stroke order rendered by JS -->
+              </div>
+            </div>
+            <div class="tracing-controls">
+              <div class="tracing-score-display">
+                <span class="tracing-score-label">Accuracy:</span>
+                <div class="tracing-score-bar">
+                  <div class="tracing-score-fill" id="tracing-score-fill"></div>
+                </div>
+                <span class="tracing-score-value" id="tracing-score-value">0%</span>
+              </div>
+              <div class="tracing-buttons">
+                <button class="btn btn-secondary" id="tracing-clear-btn">🗑️ Clear</button>
+                <button class="btn btn-primary" id="tracing-submit-btn" disabled>✓ Submit Trace</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Feedback Overlay -->
