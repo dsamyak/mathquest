@@ -250,9 +250,9 @@ export const State = {
     if (s.bestStreak >= 20 && !this.hasBadge('fire_streak')) {
       if (this.earnBadge('fire_streak')) newBadges.push('fire_streak');
     }
-    // Math Master - complete all modules (P1=14, P2=6, Middle=6, Upper=7)
+    // Math Master - complete all modules (P1=14, G3=17, Middle=6, Upper=7)
     if (this.getModuleProgress(1, 14) >= 14 && 
-        this.getModuleProgress(2, 6) >= 6 && 
+        this.getModuleProgress(2, 17) >= 17 && 
         this.getModuleProgress(3, 6) >= 6 && 
         this.getModuleProgress(4, 7) >= 7 &&
         !this.hasBadge('math_master')) {
