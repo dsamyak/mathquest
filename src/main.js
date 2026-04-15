@@ -575,6 +575,7 @@ function getStrokeStartPoints(digit, w, h) {
 }
 
 // Calculate tracing accuracy using grid-based path coverage
+// Designed to give 100% when user covers the digit guide area fully
 function calculateTracingScore(strokes, digit, w, h) {
   if (strokes.length === 0) return 0;
   
@@ -584,7 +585,7 @@ function calculateTracingScore(strokes, digit, w, h) {
   idealCanvas.height = h;
   const idealCtx = idealCanvas.getContext('2d');
   
-  // Draw the ideal digit as a filled shape
+  // Draw the ideal digit as a filled shape (slightly thick to be generous)
   idealCtx.font = `bold ${Math.min(w, h) * 0.7}px Outfit, sans-serif`;
   idealCtx.textAlign = 'center';
   idealCtx.textBaseline = 'middle';
@@ -594,14 +595,14 @@ function calculateTracingScore(strokes, digit, w, h) {
   // Get the ideal digit pixels
   const idealData = idealCtx.getImageData(0, 0, w, h).data;
   
-  // Create a grid from user strokes
+  // Create canvas from user strokes — use a generous stroke width
   const userCanvas = document.createElement('canvas');
   userCanvas.width = w;
   userCanvas.height = h;
   const userCtx = userCanvas.getContext('2d');
   
   userCtx.strokeStyle = 'black';
-  userCtx.lineWidth = 10;
+  userCtx.lineWidth = 14; // generous width for coverage
   userCtx.lineCap = 'round';
   userCtx.lineJoin = 'round';
   
@@ -617,43 +618,51 @@ function calculateTracingScore(strokes, digit, w, h) {
   
   const userData = userCtx.getImageData(0, 0, w, h).data;
   
-  // Sample grid cells (8x8 grid)
-  const gridSize = 8;
+  // Sample grid cells (10x10 grid with multiple sample points per cell)
+  const gridSize = 10;
   const cellW = Math.floor(w / gridSize);
   const cellH = Math.floor(h / gridSize);
   
   let idealCells = 0;
   let matchedCells = 0;
-  let penaltyCells = 0;
   
   for (let gy = 0; gy < gridSize; gy++) {
     for (let gx = 0; gx < gridSize; gx++) {
       let idealHit = false;
       let userHit = false;
       
-      // Sample center of each cell
-      const sx = gx * cellW + Math.floor(cellW / 2);
-      const sy = gy * cellH + Math.floor(cellH / 2);
-      const idx = (sy * w + sx) * 4;
+      // Sample 4 points within each cell for better coverage detection
+      const sampleOffsets = [
+        [0.3, 0.3], [0.7, 0.3], [0.3, 0.7], [0.7, 0.7]
+      ];
       
-      if (idx < idealData.length && idealData[idx + 3] > 128) idealHit = true;
-      if (idx < userData.length && userData[idx + 3] > 128) userHit = true;
+      for (const [ox, oy] of sampleOffsets) {
+        const sx = Math.floor(gx * cellW + cellW * ox);
+        const sy = Math.floor(gy * cellH + cellH * oy);
+        const idx = (sy * w + sx) * 4;
+        
+        if (idx < idealData.length && idealData[idx + 3] > 80) idealHit = true;
+        if (idx < userData.length && userData[idx + 3] > 80) userHit = true;
+      }
       
       if (idealHit) {
         idealCells++;
         if (userHit) matchedCells++;
-      } else if (userHit) {
-        penaltyCells++;
       }
     }
   }
   
-  if (idealCells === 0) return strokes.length > 0 ? 60 : 0; // Fallback
+  if (idealCells === 0) return strokes.length > 0 ? 70 : 0; // Fallback
   
+  // Coverage-based score, no penalty for over-drawing
+  // If user covers 90%+ of the digit, give 100%
   const coverage = matchedCells / idealCells;
-  const penalty = Math.min(0.3, (penaltyCells / (gridSize * gridSize)) * 0.5);
   
-  return Math.max(0, (coverage - penalty) * 100);
+  if (coverage >= 0.9) return 100;
+  if (coverage >= 0.8) return 85 + (coverage - 0.8) * 150; // 85-100 range
+  if (coverage >= 0.6) return 60 + (coverage - 0.6) * 125; // 60-85 range
+  
+  return Math.max(0, Math.round(coverage * 100));
 }
 
 

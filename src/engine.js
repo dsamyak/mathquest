@@ -153,14 +153,14 @@ const Templates = {
   /* ================================================================
      PRIMARY 1: NUMBER TRACING (Interactive Canvas)
      ================================================================ */
-  number_tracing() {
-    const digit = randInt(0, 9);
+  number_tracing(digit) {
+    const d = (digit !== undefined && digit !== null) ? digit : randInt(0, 9);
     return {
       builderType: 'tracing',
-      q: `Trace the number <span class="trace-digit-display">${digit}</span> by following the guide below!`,
-      digit: digit,
-      paths: DIGIT_PATHS[digit],
-      a: String(digit), // answer is the digit itself (auto-checked by tracing)
+      q: `Trace the number <span class="trace-digit-display">${d}</span> by following the guide below!`,
+      digit: d,
+      paths: DIGIT_PATHS[d],
+      a: String(d), // answer is the digit itself (auto-checked by tracing)
     };
   },
 
@@ -1039,7 +1039,8 @@ const Templates = {
       return {
         q: `There are <strong>${groups} groups</strong> of <strong>${perGroup} ${emoji}</strong>.<br>How many ${emoji} altogether?`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'multiplication')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'multiplication')]),
+        visual: { type: 'grouping', params: { total: ans, groups: groups, perGroup: perGroup, emoji: emoji } }
       };
     } else if (type === 3) {
       // Word problem
@@ -1050,7 +1051,8 @@ const Templates = {
       return {
         q: `There are ${each} ${item} on each of ${plates} plates. How many ${item} are there in all?`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'multiplication')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'multiplication')]),
+        visual: { type: 'array_dots', params: { rows: each, cols: plates } }
       };
     } else {
       // Missing factor
@@ -1891,7 +1893,8 @@ const Templates = {
         `${ansNum+1}/${ansDen}`, 
         `${ansNum}/${ansDen+1}`, 
         `${num+mult}/${den+mult}` // common student mistake
-      ])
+      ]),
+      visual: { type: 'fraction_circle', params: { numerator: num, denominator: den } }
     };
   },
 
@@ -2163,6 +2166,14 @@ export const Generator = {
   getLessonItems(lessonData) {
     const items = [];
     const count = lessonData.questionsPerLesson || 10;
+    
+    // Special case: tracing lessons should go in ascending digit order (0,1,2,...9)
+    if (lessonData.questionType === 'number_tracing') {
+      for (let i = 0; i < Math.min(count, 10); i++) {
+        items.push(Templates.number_tracing(i));
+      }
+      return items;
+    }
     
     for (let i = 0; i < count; i++) {
       items.push(this.getQuestion(lessonData.questionType));
