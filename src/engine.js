@@ -178,7 +178,8 @@ const Templates = {
       return {
         q: `Count the objects:<br><span class="emoji-objects">${display}</span><br>How many ${emoji} are there?`,
         a: String(count),
-        choices: shuffle([String(count), ...generateDistractors(count, 'small')])
+        choices: shuffle([String(count), ...generateDistractors(count, 'small')]),
+        visual: { type: 'ten_frame', params: { count: count, total: 10 } }
       };
     } else if (type === 2) {
       // Match numeral to word
@@ -187,7 +188,8 @@ const Templates = {
       return {
         q: `What number is <strong>"${word}"</strong>?`,
         a: String(num),
-        choices: shuffle([String(num), ...generateDistractors(num, 'small')])
+        choices: shuffle([String(num), ...generateDistractors(num, 'small')]),
+        visual: { type: 'number_line', params: { min: 0, max: 10, highlight: [] } }
       };
     } else if (type === 3) {
       // What comes after
@@ -196,7 +198,8 @@ const Templates = {
       return {
         q: `What number comes just after <strong>${num}</strong>?`,
         a: String(ans),
-        choices: shuffle([String(ans), String(num), String(ans + 1), String(Math.max(0, num - 1))])
+        choices: shuffle([String(ans), String(num), String(ans + 1), String(Math.max(0, num - 1))]),
+        visual: { type: 'number_line', params: { min: 0, max: 10, highlight: [num], hops: [{ from: num, to: ans, label: '+1', color: '#10b981' }] } }
       };
     } else {
       // What comes before
@@ -205,7 +208,8 @@ const Templates = {
       return {
         q: `What number comes just before <strong>${num}</strong>?`,
         a: String(ans),
-        choices: shuffle([String(ans), String(num), String(num + 1), String(Math.max(0, ans - 1))])
+        choices: shuffle([String(ans), String(num), String(num + 1), String(Math.max(0, ans - 1))]),
+        visual: { type: 'number_line', params: { min: 0, max: 10, highlight: [num], hops: [{ from: num, to: ans, label: '-1', color: '#ef4444' }] } }
       };
     }
   },
@@ -221,11 +225,11 @@ const Templates = {
       const count = randInt(11, 20);
       const tens = Math.floor(count / 10);
       const ones = count % 10;
-      const tenFrame = '🔵'.repeat(10) + ' ' + '🔵'.repeat(ones) + '⚪'.repeat(10 - ones);
       return {
-        q: `Look at the ten-frame:<br><span class="ten-frame">${tenFrame}</span><br>How many dots are filled in?`,
+        q: `Look at the ten-frames below.<br>How many dots are filled in?`,
         a: String(count),
-        choices: shuffle([String(count), ...generateDistractors(count, 'small')])
+        choices: shuffle([String(count), ...generateDistractors(count, 'small')]),
+        visual: { type: 'ten_frame', params: { count: count, total: 20 } }
       };
     } else if (type === 2) {
       // Number word matching for teens
@@ -234,7 +238,8 @@ const Templates = {
       return {
         q: `Write the number for the word <strong>"${word}"</strong>.`,
         a: String(num),
-        choices: shuffle([String(num), ...generateDistractors(num, 'small')])
+        choices: shuffle([String(num), ...generateDistractors(num, 'small')]),
+        visual: { type: 'number_line', params: { min: 10, max: 20, highlight: [] } }
       };
     } else if (type === 3) {
       // Compose tens and ones
@@ -244,7 +249,8 @@ const Templates = {
       return {
         q: `What number is <strong>${tens} ten</strong> and <strong>${ones} ones</strong>?`,
         a: String(ans),
-        choices: shuffle([String(ans), String(ans + 1), String(ones), String(10 + ones + 1)])
+        choices: shuffle([String(ans), String(ans + 1), String(ones), String(10 + ones + 1)]),
+        visual: { type: 'base10_blocks', params: { hundreds: 0, tens: tens, ones: ones } }
       };
     } else {
       // What is between
@@ -252,7 +258,8 @@ const Templates = {
       return {
         q: `What number is between <strong>${num}</strong> and <strong>${num + 2}</strong>?`,
         a: String(num + 1),
-        choices: shuffle([String(num + 1), String(num), String(num + 2), String(num + 3)])
+        choices: shuffle([String(num + 1), String(num), String(num + 2), String(num + 3)]),
+        visual: { type: 'number_line', params: { min: 10, max: 20, highlight: [num, num + 2] } }
       };
     }
   },
@@ -271,7 +278,8 @@ const Templates = {
       return {
         q: `Count by 2s: ${seq.join(', ')}, ___`,
         a: String(ans),
-        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(ans + 2)])
+        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(ans + 2)]),
+        visual: { type: 'number_line', params: { min: start, max: ans + 4, highlight: [...seq, ans], hops: seq.map((v, i) => ({ from: v, to: v + 2, label: '+2', color: '#7c3aed' })) } }
       };
     } else if (type === 2) {
       // Skip counting by 5s
@@ -281,7 +289,8 @@ const Templates = {
       return {
         q: `Count by 5s: ${seq.join(', ')}, ___`,
         a: String(ans),
-        choices: shuffle([String(ans), String(ans + 5), String(ans - 5), String(ans + 1)])
+        choices: shuffle([String(ans), String(ans + 5), String(ans - 5), String(ans + 1)]),
+        visual: { type: 'number_line', params: { min: start, max: ans + 5, highlight: [...seq] } }
       };
     } else if (type === 3) {
       // Skip counting by 10s
@@ -291,7 +300,8 @@ const Templates = {
       return {
         q: `Count by 10s: ${seq.join(', ')}, ___`,
         a: String(ans),
-        choices: shuffle([String(ans), String(ans + 10), String(ans - 10), String(ans + 5)])
+        choices: shuffle([String(ans), String(ans + 10), String(ans - 10), String(ans + 5)]),
+        visual: { type: 'number_line', params: { min: start, max: ans + 10, highlight: [...seq] } }
       };
     } else {
       // Place value: tens and ones
@@ -301,7 +311,8 @@ const Templates = {
       return {
         q: `What number has <strong>${tens} tens</strong> and <strong>${ones} ones</strong>?`,
         a: String(ans),
-        choices: shuffle([String(ans), String(tens + ones), String(ones * 10 + tens), String(ans + 10)])
+        choices: shuffle([String(ans), String(tens + ones), String(ones * 10 + tens), String(ans + 10)]),
+        visual: { type: 'base10_blocks', params: { hundreds: 0, tens: tens, ones: ones } }
       };
     }
   },
@@ -321,7 +332,8 @@ const Templates = {
       return {
         q: `Which number is <strong>greater</strong>: <strong>${a}</strong> or <strong>${b}</strong>?`,
         a: String(bigger),
-        choices: shuffle([String(a), String(b)])
+        choices: shuffle([String(a), String(b)]),
+        visual: { type: 'comparison_bars', params: { values: [a, b], labels: [String(a), String(b)] } }
       };
     } else if (type === 2) {
       // Which is smallest
@@ -330,7 +342,8 @@ const Templates = {
       return {
         q: `Which is the <strong>smallest</strong> number?<br>${shuffle(nums).join(' , ')}`,
         a: String(smallest),
-        choices: shuffle(nums.map(String))
+        choices: shuffle(nums.map(String)),
+        visual: { type: 'comparison_bars', params: { values: nums, labels: nums.map(String) } }
       };
     } else if (type === 3) {
       // Arrange ascending
@@ -341,7 +354,8 @@ const Templates = {
       return {
         q: `Arrange in order from <strong>smallest to greatest</strong>:<br>${shuffled.join(', ')}`,
         a: sorted,
-        choices: shuffle([sorted, [c, b, a].join(', '), [b, a, c].join(', '), [a, c, b].join(', ')])
+        choices: shuffle([sorted, [c, b, a].join(', '), [b, a, c].join(', '), [a, c, b].join(', ')]),
+        visual: { type: 'comparison_bars', params: { values: shuffled, labels: shuffled.map(String) } }
       };
     } else {
       // Compare with symbols
@@ -352,7 +366,8 @@ const Templates = {
       return {
         q: `Fill in the blank: <strong>${a}</strong> ___ <strong>${b}</strong>`,
         a: ans,
-        choices: shuffle(['>', '<', '='])
+        choices: shuffle(['>', '<', '=']),
+        visual: { type: 'comparison_bars', params: { values: [a, b], labels: [String(a), String(b)] } }
       };
     }
   },
@@ -370,7 +385,8 @@ const Templates = {
       return {
         q: `Number bond: <strong>${part}</strong> and <strong>___</strong> make <strong>10</strong>.`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')]),
+        visual: { type: 'number_bond', params: { whole: 10, part1: part, part2: ans, missingPart: 'part2' } }
       };
     } else if (type === 2) {
       // Number bond — find the whole
@@ -380,7 +396,8 @@ const Templates = {
       return {
         q: `<strong>${a}</strong> and <strong>${b}</strong> make <strong>___</strong>.`,
         a: String(ans),
-        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(a * b)])
+        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(a * b)]),
+        visual: { type: 'number_bond', params: { whole: ans, part1: a, part2: b, missingPart: 'whole' } }
       };
     } else if (type === 3) {
       // Number bonds to 5
@@ -389,7 +406,8 @@ const Templates = {
       return {
         q: `Number bond: <strong>${part}</strong> + <strong>___</strong> = <strong>5</strong>`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')]),
+        visual: { type: 'number_bond', params: { whole: 5, part1: part, part2: ans, missingPart: 'part2' } }
       };
     } else {
       // Decompose a number
@@ -399,7 +417,8 @@ const Templates = {
       return {
         q: `Break <strong>${total}</strong> into two parts. If one part is <strong>${part1}</strong>, what is the other?`,
         a: String(part2),
-        choices: shuffle([String(part2), String(part2 + 1), String(part2 - 1 >= 0 ? part2 - 1 : part2 + 2), String(total)])
+        choices: shuffle([String(part2), String(part2 + 1), String(part2 - 1 >= 0 ? part2 - 1 : part2 + 2), String(total)]),
+        visual: { type: 'number_bond', params: { whole: total, part1: part1, part2: part2, missingPart: 'part2' } }
       };
     }
   },
@@ -420,7 +439,8 @@ const Templates = {
       return {
         q: `${rand(NAMES)} has ${a} ${emoji}. ${rand(NAMES)} gives ${bClamped} more ${emoji}.<br>How many ${emoji} are there now?`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')]),
+        visual: { type: 'number_line', params: { min: 0, max: 20, highlight: [a, ans], hops: [{ from: a, to: ans, label: `+${bClamped}`, color: '#10b981' }] } }
       };
     } else if (type === 2) {
       // Vertical addition
@@ -430,7 +450,8 @@ const Templates = {
       return {
         q: `What is <strong>${a} + ${b}</strong> = ?`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')]),
+        visual: { type: 'number_line', params: { min: 0, max: 20, highlight: [a, ans], hops: [{ from: a, to: ans, label: `+${b}`, color: '#7c3aed' }] } }
       };
     } else if (type === 3) {
       // Missing addend
@@ -468,7 +489,8 @@ const Templates = {
       return {
         q: `${rand(NAMES)} has ${total} ${emoji} and gives away ${take}.<br>How many ${emoji} are left?`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')]),
+        visual: { type: 'number_line', params: { min: 0, max: 20, highlight: [total, ans], hops: [{ from: total, to: ans, label: `-${take}`, color: '#ef4444' }] } }
       };
     } else if (type === 2) {
       // Simple subtraction
@@ -478,7 +500,8 @@ const Templates = {
       return {
         q: `What is <strong>${a} − ${b}</strong> = ?`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')]),
+        visual: { type: 'number_line', params: { min: 0, max: 20, highlight: [a, ans], hops: [{ from: a, to: ans, label: `-${b}`, color: '#ef4444' }] } }
       };
     } else if (type === 3) {
       // Find the difference
@@ -488,7 +511,8 @@ const Templates = {
       return {
         q: `What is the difference between <strong>${a}</strong> and <strong>${b}</strong>?`,
         a: String(diff),
-        choices: shuffle([String(diff), ...generateDistractors(diff, 'small')])
+        choices: shuffle([String(diff), ...generateDistractors(diff, 'small')]),
+        visual: { type: 'comparison_bars', params: { values: [a, b], labels: [String(a), String(b)] } }
       };
     } else {
       // Missing subtrahend
@@ -498,7 +522,8 @@ const Templates = {
       return {
         q: `<strong>${total}</strong> − ___ = <strong>${result}</strong>`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')]),
+        visual: { type: 'number_line', params: { min: 0, max: 20, highlight: [total, result] } }
       };
     }
   },
@@ -629,18 +654,20 @@ const Templates = {
       const ans = `${hour} o'clock`;
       // Build a text-based clock representation
       return {
-        q: `🕐 The short hand points to <strong>${hour}</strong> and the long hand points to <strong>12</strong>.<br>What time is it?`,
+        q: `The short hand points to <strong>${hour}</strong> and the long hand points to <strong>12</strong>.<br>What time is it?`,
         a: ans,
-        choices: shuffle([ans, `${hour === 12 ? 1 : hour + 1} o'clock`, `half past ${hour}`, `${hour === 1 ? 12 : hour - 1} o'clock`])
+        choices: shuffle([ans, `${hour === 12 ? 1 : hour + 1} o'clock`, `half past ${hour}`, `${hour === 1 ? 12 : hour - 1} o'clock`]),
+        visual: { type: 'clock', params: { hour: hour, minute: 0 } }
       };
     } else if (type === 2) {
       // Half past
       const hour = randInt(1, 12);
       const ans = `half past ${hour}`;
       return {
-        q: `🕐 The short hand is between <strong>${hour}</strong> and <strong>${hour === 12 ? 1 : hour + 1}</strong>. The long hand points to <strong>6</strong>.<br>What time is it?`,
+        q: `The short hand is between <strong>${hour}</strong> and <strong>${hour === 12 ? 1 : hour + 1}</strong>. The long hand points to <strong>6</strong>.<br>What time is it?`,
         a: ans,
-        choices: shuffle([ans, `${hour} o'clock`, `half past ${hour === 12 ? 1 : hour + 1}`, `${hour === 12 ? 1 : hour + 1} o'clock`])
+        choices: shuffle([ans, `${hour} o'clock`, `half past ${hour === 12 ? 1 : hour + 1}`, `${hour === 12 ? 1 : hour + 1} o'clock`]),
+        visual: { type: 'clock', params: { hour: hour, minute: 30 } }
       };
     } else {
       // Match time to activity
@@ -670,25 +697,28 @@ const Templates = {
       // Identify 2D shape by description
       const shape = rand(SHAPES_2D);
       return {
-        q: `I am a shape that is ${shape.desc}.<br>What am I? ${SHAPE_EMOJI[shape.name] || ''}`,
+        q: `I am a shape that is ${shape.desc}.<br>What am I?`,
         a: shape.name,
-        choices: shuffle(SHAPES_2D.map(s => s.name))
+        choices: shuffle(SHAPES_2D.map(s => s.name)),
+        visual: { type: 'shape', params: { name: shape.name, showLabels: true } }
       };
     } else if (type === 2) {
       // Count sides
       const shape = rand(SHAPES_2D.filter(s => s.sides > 0));
       return {
-        q: `How many sides does a <strong>${shape.name}</strong> ${SHAPE_EMOJI[shape.name] || ''} have?`,
+        q: `How many sides does a <strong>${shape.name}</strong> have?`,
         a: String(shape.sides),
-        choices: shuffle([String(shape.sides), '2', '5', String(shape.sides + 1)])
+        choices: shuffle([String(shape.sides), '2', '5', String(shape.sides + 1)]),
+        visual: { type: 'shape', params: { name: shape.name, showLabels: true } }
       };
     } else if (type === 3) {
       // 3D shape identification
       const shape = rand(SHAPES_3D);
       return {
-        q: `This 3D shape looks like <strong>${shape.example}</strong>. It has ${shape.desc}.<br>What shape is it? ${SHAPE_EMOJI[shape.name] || ''}`,
+        q: `This 3D shape looks like <strong>${shape.example}</strong>. It has ${shape.desc}.<br>What shape is it?`,
         a: shape.name,
-        choices: shuffle(SHAPES_3D.slice(0, 4).map(s => s.name))
+        choices: shuffle(SHAPES_3D.slice(0, 4).map(s => s.name)),
+        visual: { type: 'shape', params: { name: shape.name, showLabels: false } }
       };
     } else {
       // Match shape to real object
@@ -701,9 +731,10 @@ const Templates = {
       ];
       const pair = rand(pairs);
       return {
-        q: `${SHAPE_EMOJI[pair.shape] || ''} What shape is <strong>${pair.obj}</strong>?`,
+        q: `What shape is <strong>${pair.obj}</strong>?`,
         a: pair.shape,
-        choices: shuffle(pairs.slice(0, 4).map(p => p.shape))
+        choices: shuffle(pairs.slice(0, 4).map(p => p.shape)),
+        visual: { type: 'shape', params: { name: pair.shape, showLabels: false } }
       };
     }
   },
@@ -769,7 +800,8 @@ const Templates = {
       return {
         q: `What comes next? <strong>${seq.join(', ')}, ___</strong>`,
         a: String(ans),
-        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(start)])
+        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(start)]),
+        visual: { type: 'number_line', params: { min: start, max: ans + 2, highlight: seq } }
       };
     } else if (type === 2) {
       // Number pattern +2
@@ -779,7 +811,8 @@ const Templates = {
       return {
         q: `What comes next? <strong>${seq.join(', ')}, ___</strong>`,
         a: String(ans),
-        choices: shuffle([String(ans), String(ans + 1), String(ans + 2), String(ans - 2)])
+        choices: shuffle([String(ans), String(ans + 1), String(ans + 2), String(ans - 2)]),
+        visual: { type: 'number_line', params: { min: start, max: ans + 2, highlight: seq, hops: seq.map(v => ({ from: v, to: v + 2, label: '+2' })) } }
       };
     } else if (type === 3) {
       // Shape pattern
@@ -791,9 +824,10 @@ const Templates = {
       ];
       const p = rand(patternSets);
       return {
-        q: `What comes next in the pattern?<br><span class="pattern-display">${p.pattern.join(' ')} ___</span>`,
+        q: `What comes next in the pattern?`,
         a: p.ans,
-        choices: shuffle(p.options)
+        choices: shuffle(p.options),
+        visual: { type: 'pattern_strip', params: { items: p.pattern, highlightLast: true } }
       };
     } else {
       // Decreasing pattern
@@ -803,7 +837,8 @@ const Templates = {
       return {
         q: `What comes next? <strong>${seq.join(', ')}, ___</strong>`,
         a: String(ans),
-        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(start)])
+        choices: shuffle([String(ans), String(ans + 1), String(ans - 1), String(start)]),
+        visual: { type: 'number_line', params: { min: ans - 2, max: start, highlight: seq } }
       };
     }
   },
@@ -829,7 +864,8 @@ const Templates = {
       return {
         q: `In the number <strong>${num}</strong>, what is the value of the digit <strong>${digit}</strong> in the ${posName} place?`,
         a: String(ans),
-        choices: shuffle(Array.from(choices).slice(0, 4))
+        choices: shuffle(Array.from(choices).slice(0, 4)),
+        visual: { type: 'place_value_chart', params: { number: num, columns: ['H', 'T', 'O'] } }
       };
     } else if (type === 2) {
       // Expanded form
@@ -991,7 +1027,8 @@ const Templates = {
       return {
         q: `What is <strong>${table} × ${b}</strong>?`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'multiplication')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'multiplication')]),
+        visual: { type: 'array_dots', params: { rows: table, cols: b } }
       };
     } else if (type === 2) {
       // Groups of
@@ -1242,7 +1279,8 @@ const Templates = {
       return {
         q: `Each book costs $${price}. ${rand(NAMES)} buys ${qty} books. How much does ${rand(NAMES)} pay?`,
         a: `$${ans}`,
-        choices: shuffle([`$${ans}`, `$${ans + price}`, `$${price + qty}`, `$${ans - price}`])
+        choices: shuffle([`$${ans}`, `$${ans + price}`, `$${price + qty}`, `$${ans - price}`]),
+        visual: { type: 'money', params: { dollars: ans, cents: 0 } }
       };
     } else {
       // Making change
@@ -1267,7 +1305,8 @@ const Templates = {
       return {
         q: `What fraction is <strong>${num}</strong> out of <strong>${den}</strong> equal parts?`,
         a: `${num}/${den}`,
-        choices: shuffle([`${num}/${den}`, `${den}/${num}`, `${num + 1}/${den}`, `${num}/${den + 1}`])
+        choices: shuffle([`${num}/${den}`, `${den}/${num}`, `${num + 1}/${den}`, `${num}/${den + 1}`]),
+        visual: { type: 'fraction_circle', params: { numerator: num, denominator: den } }
       };
     } else if (type === 2) {
       // Compare fractions (same denominator)
@@ -1278,7 +1317,8 @@ const Templates = {
       return {
         q: `Which is greater: <strong>${a}/${den}</strong> or <strong>${b}/${den}</strong>?`,
         a: bigger,
-        choices: shuffle([`${a}/${den}`, `${b}/${den}`])
+        choices: shuffle([`${a}/${den}`, `${b}/${den}`]),
+        visual: { type: 'fraction_circle', params: { numerator: a, denominator: den } }
       };
     } else if (type === 3) {
       // Ordering fractions
@@ -1288,7 +1328,8 @@ const Templates = {
       return {
         q: `Arrange from <strong>smallest to greatest</strong>:<br>${fracs.map(n => `${n}/${den}`).join(', ')}`,
         a: sorted,
-        choices: shuffle([sorted, [...fracs].sort((x, y) => y - x).map(n => `${n}/${den}`).join(', '), fracs.map(n => `${n}/${den}`).join(', ')])
+        choices: shuffle([sorted, [...fracs].sort((x, y) => y - x).map(n => `${n}/${den}`).join(', '), fracs.map(n => `${n}/${den}`).join(', ')]),
+        visual: { type: 'fraction_circle', params: { numerator: fracs[0], denominator: den } }
       };
     } else {
       // Fraction of a set
@@ -1299,7 +1340,8 @@ const Templates = {
       return {
         q: `What is <strong>1/${den}</strong> of <strong>${total}</strong>?`,
         a: String(ans),
-        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')])
+        choices: shuffle([String(ans), ...generateDistractors(ans, 'small')]),
+        visual: { type: 'fraction_circle', params: { numerator: 1, denominator: den } }
       };
     }
   },
@@ -1314,9 +1356,10 @@ const Templates = {
       const strMin = min < 10 ? '0' + min : String(min);
       const ans = `${hour}:${strMin}`;
       return {
-        q: `🕐 The hour hand points near <strong>${hour}</strong> and the minute hand points to <strong>${min / 5}</strong>.<br>What time is it?`,
+        q: `Look at the clock. What time is it?`,
         a: ans,
-        choices: shuffle([ans, `${hour}:${min === 0 ? '30' : '00'}`, `${hour + 1 > 12 ? 1 : hour + 1}:${strMin}`, `${hour}:${(min + 5) % 60 < 10 ? '0' + ((min + 5) % 60) : (min + 5) % 60}`])
+        choices: shuffle([ans, `${hour}:${min === 0 ? '30' : '00'}`, `${hour + 1 > 12 ? 1 : hour + 1}:${strMin}`, `${hour}:${(min + 5) % 60 < 10 ? '0' + ((min + 5) % 60) : (min + 5) % 60}`]),
+        visual: { type: 'clock', params: { hour: hour, minute: min } }
       };
     } else if (type === 2) {
       // a.m. or p.m.
@@ -1368,7 +1411,8 @@ const Templates = {
       return {
         q: `A ribbon is <strong>${a} cm</strong> long. Another ribbon is <strong>${b} cm</strong> long. What is the total length?`,
         a: `${ans} cm`,
-        choices: shuffle([`${ans} cm`, `${ans + 10} cm`, `${Math.abs(a - b)} cm`, `${ans - 10} cm`])
+        choices: shuffle([`${ans} cm`, `${ans + 10} cm`, `${Math.abs(a - b)} cm`, `${ans - 10} cm`]),
+        visual: { type: 'ruler', params: { lengths: [a, b], unit: 'cm', maxVal: Math.max(a, b) + 20 } }
       };
     } else if (type === 2) {
       // Compare mass
@@ -1379,7 +1423,8 @@ const Templates = {
       return {
         q: `Box A has a mass of <strong>${a} kg</strong>. Box B has a mass of <strong>${b} kg</strong>. Which box is heavier?`,
         a: a > b ? 'Box A' : 'Box B',
-        choices: shuffle(['Box A', 'Box B'])
+        choices: shuffle(['Box A', 'Box B']),
+        visual: { type: 'balance', params: { left: `${a} kg`, right: `${b} kg`, leftVal: a, rightVal: b } }
       };
     } else if (type === 3) {
       // Word problem with mass
@@ -1685,7 +1730,8 @@ const Templates = {
       return {
         q: `In the large number ${num}, what is the actual value of the digit ${digit}?`,
         a: String(ans),
-        choices: shuffle(Array.from(choices).slice(0, 4))
+        choices: shuffle(Array.from(choices).slice(0, 4)),
+        visual: { type: 'place_value_chart', params: { number: num, columns: ['TTh', 'Th', 'H', 'T', 'O'] } }
       };
     } else if (type === 2) {
       // Rounding
@@ -1825,7 +1871,8 @@ const Templates = {
     return {
       q: `What fraction is ${num} out of ${den}?`,
       a: `${num}/${den}`,
-      choices: shuffle([`${num}/${den}`, `${den}/${num}`, `${num+1}/${den}`, `${num}/${den+1}`])
+      choices: shuffle([`${num}/${den}`, `${den}/${num}`, `${num+1}/${den}`, `${num}/${den+1}`]),
+      visual: { type: 'fraction_circle', params: { numerator: num, denominator: den } }
     };
   },
 
@@ -2007,14 +2054,16 @@ const Templates = {
       return {
         q: `What is the area of a rectangle with length ${length}cm and width ${width}cm?`,
         a: `${ans} cm²`,
-        choices: shuffle([`${ans} cm²`, `${length * width + 2} cm²`, `${(length + width) * 2} cm²`, `${length + width} cm²`])
+        choices: shuffle([`${ans} cm²`, `${length * width + 2} cm²`, `${(length + width) * 2} cm²`, `${length + width} cm²`]),
+        visual: { type: 'rectangle_grid', params: { length: length, width: width, showArea: true } }
       };
     } else {
       const ans = (length + width) * 2;
       return {
         q: `What is the perimeter of a rectangle with length ${length}cm and width ${width}cm?`,
         a: `${ans} cm`,
-        choices: shuffle([`${ans} cm`, `${length * width} cm`, `${ans + 2} cm`, `${length + width} cm`])
+        choices: shuffle([`${ans} cm`, `${length * width} cm`, `${ans + 2} cm`, `${length + width} cm`]),
+        visual: { type: 'rectangle_grid', params: { length: length, width: width, showArea: false } }
       };
     }
   },
@@ -2027,7 +2076,8 @@ const Templates = {
     return {
       q: `A bar graph shows ${val1} ${itemName} for Group A and ${val2} for Group B. How many more ${itemName} does Group B have?`,
       a: String(diff),
-      choices: shuffle([String(diff), String(val1 + val2), String(diff + 5), String(val2)])
+      choices: shuffle([String(diff), String(val1 + val2), String(diff + 5), String(val2)]),
+      visual: { type: 'bar_graph', params: { groupA: val1, groupB: val2, item: itemName } }
     };
   },
 
@@ -2039,7 +2089,8 @@ const Templates = {
     return {
       q: `What is ${num1}/${den} + ${num2}/${den}?`,
       a: `${ansNum}/${den}`,
-      choices: shuffle([`${ansNum}/${den}`, `${ansNum}/${den*2}`, `${num1+num2+1}/${den}`, `${num1*num2}/${den}`])
+      choices: shuffle([`${ansNum}/${den}`, `${ansNum}/${den*2}`, `${num1+num2+1}/${den}`, `${num1*num2}/${den}`]),
+      visual: { type: 'fraction_bar', params: { numerator1: num1, numerator2: num2, denominator: den } }
     };
   },
 
@@ -2049,7 +2100,8 @@ const Templates = {
     return {
       q: `Angles on a straight line add up to 180°. If one angle is ${known}°, what is the unknown angle?`,
       a: `${ans}°`,
-      choices: shuffle([`${ans}°`, `${90 - known > 0 ? 90 - known : known}°`, `${360 - known}°`, `${ans + 10}°`])
+      choices: shuffle([`${ans}°`, `${90 - known > 0 ? 90 - known : known}°`, `${360 - known}°`, `${ans + 10}°`]),
+      visual: { type: 'angle', params: { known: known, unknown: ans, type: 'straight' } }
     };
   },
 
@@ -2062,7 +2114,8 @@ const Templates = {
       return {
         q: `A car travels at a speed of ${speed} km/h for ${hours} hours. What is the distance covered?`,
         a: `${dist} km`,
-        choices: shuffle([`${dist} km`, `${speed + hours} km`, `${dist + 10} km`, `${speed * (hours-1)} km`])
+        choices: shuffle([`${dist} km`, `${speed + hours} km`, `${dist + 10} km`, `${speed * (hours-1)} km`]),
+        visual: { type: 'speed_distance', params: { speed: speed, hours: hours, distance: dist } }
       };
     } else {
       const kg = randInt(2, 9);

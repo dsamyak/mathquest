@@ -1982,3 +1982,432 @@ body::before {
     font-size: 180px;
   }
 }
+
+
+/* ============================================
+   VISUAL AIDS — Question Illustration System
+   ============================================ */
+
+/* === Visual Container === */
+.quiz-visual,
+.assign-visual {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.visual-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  animation: visualFadeIn 0.4s var(--ease-out);
+  max-width: 100%;
+  overflow: hidden;
+}
+
+@keyframes visualFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* === SVG Visuals Common === */
+.visual-svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.visual-number-line-svg { max-width: 480px; }
+.visual-array-svg { max-width: 350px; }
+.visual-clock-svg { max-width: 160px; }
+.visual-shape-svg { max-width: 150px; }
+.visual-fraction-svg { max-width: 150px; }
+.visual-bar-chart-svg { max-width: 340px; }
+.visual-bond-svg { max-width: 220px; }
+.visual-comparison-svg { max-width: 340px; }
+.visual-pattern-svg { max-width: 100%; overflow-x: auto; }
+.visual-ruler-svg { max-width: 400px; }
+.visual-balance-svg { max-width: 250px; }
+.visual-rect-grid-svg { max-width: 360px; }
+.visual-angle-svg { max-width: 200px; }
+.visual-speed-svg { max-width: 400px; }
+
+/* === Ten Frame === */
+.visual-ten-frame-wrap {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ten-frame-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(124, 58, 237, 0.2);
+}
+
+.ten-frame-cell {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1.5px solid rgba(148, 163, 184, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.2s ease;
+}
+
+.ten-frame-cell.filled {
+  border-color: rgba(124, 58, 237, 0.4);
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.ten-frame-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.15);
+  transition: all 0.3s var(--ease-spring);
+}
+
+.ten-frame-dot.filled {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.4);
+  animation: dotPopIn 0.3s var(--ease-spring);
+}
+
+@keyframes dotPopIn {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+/* === Base-10 Blocks === */
+.visual-base10-wrap {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.base10-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.base10-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.base10-items {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 160px;
+}
+
+.base10-flat,
+.base10-rod,
+.base10-cube {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: blockFadeIn 0.3s var(--ease-out) backwards;
+}
+
+.base10-flat { animation-delay: calc(var(--i, 0) * 0.05s); }
+.base10-rod { animation-delay: calc(var(--i, 0) * 0.03s); }
+.base10-cube { animation-delay: calc(var(--i, 0) * 0.02s); }
+
+@keyframes blockFadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* === Money Visual === */
+.visual-money-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.money-notes {
+  display: flex;
+  gap: 4px;
+  position: relative;
+}
+
+.money-note {
+  width: 70px;
+  height: 38px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--note-color), color-mix(in srgb, var(--note-color) 70%, white));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.money-note::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.money-note-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-display);
+}
+
+.money-display {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.money-coin {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--font-display);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.money-coin.dollar {
+  background: linear-gradient(160deg, #f59e0b, #fbbf24);
+  color: #78350f;
+  font-size: 14px;
+}
+
+.money-coin.cent {
+  background: linear-gradient(160deg, #94a3b8, #cbd5e1);
+  color: #334155;
+  font-size: 12px;
+  width: 42px;
+  height: 42px;
+}
+
+.money-coin-label {
+  position: relative;
+  z-index: 1;
+}
+
+/* === Grouping Visual (Division) === */
+.visual-grouping-wrap {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.grouping-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 2px dashed rgba(124, 58, 237, 0.25);
+  background: rgba(124, 58, 237, 0.05);
+  min-width: 60px;
+}
+
+.grouping-items {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.grouping-item {
+  animation: dotPopIn 0.3s var(--ease-spring) backwards;
+}
+
+.grouping-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* === Place Value Chart === */
+.visual-pv-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.pv-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.pv-cell {
+  width: 52px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.pv-header-cell {
+  background: color-mix(in srgb, var(--pv-color) 15%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--pv-color) 40%, transparent);
+  color: var(--pv-color);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  height: 32px;
+}
+
+.pv-digit-cell {
+  background: color-mix(in srgb, var(--pv-color) 8%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--pv-color) 25%, transparent);
+  color: #f1f5f9;
+  font-size: 20px;
+  animation: digitSlideIn 0.3s var(--ease-spring) backwards;
+}
+
+@keyframes digitSlideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Picture Graph Styling (existing in questions) === */
+.picture-graph {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin: 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.graph-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.graph-row:last-child {
+  border-bottom: none;
+}
+
+.graph-label {
+  min-width: 70px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.graph-icons {
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+/* === Emoji Object Display === */
+.emoji-objects {
+  display: inline-block;
+  font-size: 28px;
+  letter-spacing: 4px;
+  padding: 10px 0;
+  line-height: 1.4;
+}
+
+/* === Pattern Display === */
+.pattern-display {
+  display: inline-block;
+  font-size: 26px;
+  letter-spacing: 6px;
+  padding: 8px 0;
+}
+
+/* === Responsive adjustments for visuals === */
+@media (max-width: 600px) {
+  .visual-container {
+    padding: 10px 8px;
+  }
+
+  .ten-frame-cell {
+    width: 26px;
+    height: 26px;
+  }
+
+  .ten-frame-dot {
+    width: 14px;
+    height: 14px;
+  }
+
+  .pv-cell {
+    width: 40px;
+    height: 34px;
+  }
+
+  .pv-digit-cell {
+    font-size: 16px;
+  }
+
+  .money-note {
+    width: 56px;
+    height: 32px;
+  }
+
+  .money-note-value {
+    font-size: 12px;
+  }
+
+  .grouping-group {
+    padding: 8px 10px;
+  }
+
+  .base10-items {
+    max-width: 120px;
+  }
+
+  .emoji-objects {
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+
+  .pattern-display {
+    font-size: 20px;
+    letter-spacing: 3px;
+  }
+}

@@ -1,6 +1,7 @@
 import { State, Audio, Confetti, BADGES, showToast } from './state.js';
 import { MODULES, getLesson, getModule } from './curriculum.js';
 import { Generator, shuffle } from './engine.js';
+import { generateVisual } from './visuals.js';
 
 /* ============================================
    MathQuest — Main Application Controller
@@ -349,6 +350,18 @@ function renderCurrentQuestion() {
   DOM.probText.innerHTML = qObj.q;
   
   hideAllBuilders();
+  
+  // Render visual aid if available
+  const quizVisual = document.getElementById('quiz-visual');
+  if (quizVisual) {
+    if (qObj.visual) {
+      quizVisual.innerHTML = generateVisual(qObj.visual);
+      quizVisual.style.display = 'flex';
+    } else {
+      quizVisual.innerHTML = '';
+      quizVisual.style.display = 'none';
+    }
+  }
   
   if (type === 'tracing') {
     DOM.bldTracing.style.display = 'block';
@@ -978,6 +991,18 @@ function renderAssignmentQuestion() {
   document.getElementById('assign-progress-fill').style.width = `${(s.assignmentIndex/100)*100}%`;
   
   document.getElementById('assign-problem-text').innerHTML = qObj.q;
+  
+  // Render visual aid if available
+  const assignVisual = document.getElementById('assign-visual');
+  if (assignVisual) {
+    if (qObj.visual) {
+      assignVisual.innerHTML = generateVisual(qObj.visual);
+      assignVisual.style.display = 'flex';
+    } else {
+      assignVisual.innerHTML = '';
+      assignVisual.style.display = 'none';
+    }
+  }
   
   // Update stats
   document.getElementById('assign-correct').textContent = s.assignmentCorrect;
